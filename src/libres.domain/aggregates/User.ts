@@ -6,6 +6,8 @@ import { UserRoles } from "../enums/user-roles";
 import { UserStatus } from "../enums/user-status";
 import { IPasswordHasher } from "../interfaces/Ipassword-hasher";
 import { IRandomTokenGenerator } from "../interfaces/Irandom-token-generator";
+import { Wallet } from "./Wallet";
+import { WalletStatus } from "../enums/wallet-status";
 
 export class User extends Aggregate {
   private _username: string;
@@ -16,7 +18,13 @@ export class User extends Aggregate {
   private _roles: UserRoles;
 
   public createdAt: Date = new Date();
+  private _wallet?: Wallet;
 
+  
+  public get wallet() : Wallet {
+    return this._wallet!;
+  }
+  
   get username() {
     return this._username;
   }
@@ -61,19 +69,22 @@ export class User extends Aggregate {
     userStatus: UserStatus,
     createdAt: Date,
   ) {
-    const user = new User(id, username, email, passwordHashed,image, role);
+    const user = new User(id, username, email, passwordHashed, image, role);
     user._userStatus = userStatus;
     user.createdAt = createdAt;
     return user;
   }
+  public setWallet(id: string, balance: number, status: WalletStatus) {
+    this._wallet = Wallet.reconstitute(id, this.id, balance, status);
 
+  }
   public static create(
     username: string,
     email: string,
     password: string,
     role: UserRoles,
-    image:string | null,
-    passwordHasher: IPasswordHasher
+    image: string | null,
+    passwordHasher: IPasswordHasher,
   ): Result<User> {
     if (!username || !email || !password) {
       return Result.Failure(

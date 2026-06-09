@@ -42,11 +42,13 @@ function TopSelling() {
                 {/* <p className="text-sm text-muted-foreground mt-1">تصفح قائمة الكتب الأكثر طلباً هذا الأسبوع</p> */}
             </div>
 
-            <Carousel
+
+        {loading ? <LoadingCircle /> : sellings && sellings.length == 0 ? (<div>no top sellings</div>) :
+            (<Carousel
                 opts={{ align: "start", loop: false, dragFree: true }}
                 className="w-full relative group"
             >
-                {loading ? <LoadingCircle /> : sellings && sellings.length == 0 ? (<div>no top sellings</div>) : (
+                
 
                     <CarouselContent className="-ml-4">
                         {sellings?.map((book, index) => (
@@ -61,24 +63,21 @@ function TopSelling() {
                         ))}
                     </CarouselContent>
 
-                )}
+                
 
-
-                {/* حاوية التحكم - تم ضبط الارتفاع ليتوسط غلاف الكتاب فقط (أعلى من النصوص والسعر) */}
+                
                 <div className="absolute inset-10 flex items-center justify-between z-20 pointer-events-none">
 
-                    {/* زر التالي (Next) - في الـ RTL يكون على اليمين ليتجه للكتاب التالي */}
                     <CarouselNext
                         className=" h-10 w-10 bg-zinc-800/80 text-white rounded-full p-0 hover:bg-zinc-700 hover:text-white pointer-events-auto transition-all scale-0 group-hover:scale-100 shadow-lg border-none flex items-center justify-center"
                     />
 
-                    {/* زر السابق (Previous) - في الـ RTL يكون على اليسار للعودة للخلف */}
                     <CarouselPrevious
                         className=" h-10 w-10 bg-zinc-800/80 text-white rounded-full p-0 hover:bg-zinc-700 hover:text-white pointer-events-auto transition-all scale-0 group-hover:scale-100 shadow-lg border-none flex items-center justify-center"
                     />
 
                 </div>
-            </Carousel>
+            </Carousel>)}
         </section>
     )
 }

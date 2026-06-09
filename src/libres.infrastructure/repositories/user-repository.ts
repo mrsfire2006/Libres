@@ -4,46 +4,19 @@ import { prisma } from "../db/prisma";
 import { injectable } from "tsyringe";
 import { UserRoles } from "@/libres.domain/enums/user-roles";
 import { UserStatus } from "@/libres.domain/enums/user-status";
+import { Prisma } from "../../../generated/prisma/client";
+import { Wallet } from "@/libres.domain/aggregates/Wallet";
+import { WalletStatus } from "@/libres.domain/enums/wallet-status";
 
 @injectable()
 export class UserRepository implements IUserRepository {
-  async findUserByEmail(email: string): Promise<User | null> {
-    const raw = await prisma.user.findUnique({ where: { email: email } });
-    if (!raw) return null;
-    const user = User.reconstitute(
-      raw.id,
-      raw.username,
-      raw.email,
-      raw.passwordHashed,
-      raw.image,
-      raw.roles as UserRoles,
-      raw.userStatus as UserStatus,
-      raw.createdAt,
-    );
-    return user;
-  }
-  async findUserById(id: string): Promise<User | null> {
-    const raw = await prisma.user.findUnique({
-      where: { id },
-    });
-    if (!raw) return null;
-    return User.reconstitute(
-      raw.id,
-      raw.username,
-      raw.email,
-      raw.passwordHashed,
-      raw.image,
-      raw.roles as UserRoles,
-      raw.userStatus as UserStatus,
-      raw.createdAt,
-    );
-  }
-  async save(user: User): Promise<void> {
+  async save(user: User, tx?: Prisma.TransactionClient): Promise<void> {
+    const client = tx || prisma;
     const imageValue =
       user.image === undefined || user.image === null || user.image === ""
         ? null
         : user.image;
-    await prisma.user.upsert({
+    await client.user.upsert({
       where: { id: user.id },
       update: {
         username: user.username,
@@ -63,5 +36,52 @@ export class UserRepository implements IUserRepository {
         createdAt: user.createdAt,
       },
     });
+  }
+  async findUserByEmail(email: string): Promise<User | null> {
+    const raw = await prisma.user.findUnique({
+      where: { email: email },
+      include: {
+        wallet: {
+          select: {
+            id: true,
+            balance: true,
+            status: true,
+          },
+        },
+      },
+    });
+    if (!raw) return null;
+    const user = User.reconstitute(
+      raw.id,
+      raw.username,
+      raw.email,
+      raw.passwordHashed,
+      raw.image,
+      raw.roles as UserRoles,
+      raw.userStatus as UserStatus,
+      raw.createdAt,
+    );
+    user.setWallet(
+      raw.wallet?.id!,
+      raw.wallet?.balance!,
+      raw.wallet?.status as WalletStatus,
+    );
+    return user;
+  }
+  async findUserById(id: string): Promise<User | null> {
+    const raw = await prisma.user.findUnique({
+      where: { id },
+    });
+    if (!raw) return null;
+    return User.reconstitute(
+      raw.id,
+      raw.username,
+      raw.email,
+      raw.passwordHashed,
+      raw.image,
+      raw.roles as UserRoles,
+      raw.userStatus as UserStatus,
+      raw.createdAt,
+    );
   }
 }

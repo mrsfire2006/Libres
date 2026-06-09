@@ -5,4 +5,5 @@ export interface UserResponseDto {
   username: string;
   email: string;
   roles: UserRoles;
+  balance: number;
 }

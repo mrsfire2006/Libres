@@ -4,7 +4,6 @@ import { Result } from "../common/result";
 import { WalletStatus } from "../enums/wallet-status";
 
 export class Wallet extends Aggregate {
-
   private _userId: string;
   private _status: WalletStatus = WalletStatus.ACTIVE;
   private _balance: number = 500;
@@ -48,6 +47,18 @@ export class Wallet extends Aggregate {
     const newId = crypto.randomUUID();
     const wallet = new Wallet(newId, userId);
     return Result.Success(wallet);
+  }
+  public static reconstitute(
+    id: string,
+    userId: string,
+    balance: number,
+    status: WalletStatus,
+  ) {
+    const wallet = new Wallet(id, userId);
+
+    wallet._balance = balance;
+    wallet._status = status;
+    return wallet;
   }
 
   public updateLastUpdate(): void {

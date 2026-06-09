@@ -16,6 +16,10 @@ import { IBookQueries } from "@/libres.application/features/book-features/querie
 import { BookQueries } from "@/libres.infrastructure/queries/book-queries";
 import GetBookById from "@/features/books/actions/get-book-id-action";
 import { GetBookByIdQueryHandler } from "@/libres.application/features/book-features/queries/get-book-id/get-book-id-query-handler";
+import { IWalletRepository } from "@/libres.domain/interfaces/repositories/Iwallet-repository";
+import { WalletRespository } from "@/libres.infrastructure/repositories/wallet-repository";
+import { IUserQueries } from "@/libres.application/features/user-features/queries/Iuser-queries";
+import { UserQueries } from "@/libres.infrastructure/queries/user-queries";
 
 function registerDependencies() {
   container.registerSingleton<ICustomMediator>(
@@ -28,12 +32,14 @@ function registerDependencies() {
   );
 
   container.register<IUserRepository>("IUserRepository", UserRepository);
+  container.register<IWalletRepository>("IWalletRepository", WalletRespository);
   container.register("CreateUserCommandHandler", CreateUserCommandHandler);
   container.register("EditUserCommandHandler", EditUserCommandHandler);
   container.register("LoginUserCommandHandler", LoginUserCommandHandler);
   container.register("GetTopSellingsQueryHandler", GetTopSellingsQueryHandler);
   container.register("GetBookByIdQueryHandler", GetBookByIdQueryHandler);
   container.register<IBookQueries>("IBookQueries", BookQueries);
+  container.register<IUserQueries>("IUserQueries", UserQueries);
 }
 
 if (!container.isRegistered("ICustomMediator")) {

@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -52,7 +51,15 @@ model Book {
   user User @relation(fields: [userId], references: [id], onDelete: Restrict)
   // category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
-  // images   Image[]
   // reviews  Review[]
   // tagBooks TagBook[]
+  images Image[]
+}
+
+model Image {
+  id     String @id @default(uuid())
+  link   String
+  bookId String
+
+  book Book @relation(fields: [bookId], references: [id], onDelete: Cascade)
 }

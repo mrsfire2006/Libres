@@ -1,4 +1,4 @@
-'use server'
+"use server";
 import "@/di/container";
 
 import { getMediator } from "@/lib/mediator";
@@ -45,6 +45,7 @@ export async function signupAction(formData: FormData) {
       email: userDto.email,
       role: userDto.roles,
       password: password,
+      balance: userDto.balance,
       redirect: false,
     });
     return Result.Success<void>(undefined).toPlain();
@@ -63,7 +64,7 @@ export async function signupAction(formData: FormData) {
         ).toPlain();
       }
     }
-    console.error(error)
+    console.error(error);
     return Result.Failure<void>(
       Error.InternalServer("Server.InternalError"),
     ).toPlain();

@@ -11,6 +11,9 @@ import { Error } from "@/libres.domain/common/error";
 import { UserRoles } from "@/libres.domain/enums/user-roles";
 import type { IUserRepository } from "@/libres.domain/interfaces/repositories/Iuser-repository";
 import { UserResponseDto } from "../../commons/user-response-dto";
+import { Types } from "@prisma/client/runtime/client";
+import type { IWalletRepository } from "@/libres.domain/interfaces/repositories/Iwallet-repository";
+import { Wallet } from "@/libres.domain/aggregates/Wallet";
 
 @injectable()
 export class CreateUserCommandHandler implements ICustomRequestHandler<
@@ -22,6 +25,9 @@ export class CreateUserCommandHandler implements ICustomRequestHandler<
 
     @inject("IUserRepository")
     private userRepository: IUserRepository,
+
+    @inject("IWalletRepository")
+    private walletRepository: IWalletRepository,
   ) {}
 
   async handle(command: CreateUserCommand): Promise<Result<UserResponseDto>> {
@@ -64,7 +70,26 @@ export class CreateUserCommandHandler implements ICustomRequestHandler<
 
     const user = result.value!;
     try {
-      await this.userRepository.save(user);
+      return await prisma.$transaction(async (tx) => {
+        await this.userRepository.save(user, tx);
+        const wallet = Wallet.create(user.id);
+
+        if (wallet.isFailure) {
+          return Result.Failure(Error.Validation(wallet.error.message));
+        }
+
+        await this.walletRepository.save(wallet.value!, tx);
+
+        const registerResponse: UserResponseDto = {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          roles: user.roles,
+          balance: wallet.value?.balance!,
+        };
+
+        return Result.Success<UserResponseDto>(registerResponse);
+      });
     } catch (error) {
       if (
         typeof error === "object" &&
@@ -72,17 +97,11 @@ export class CreateUserCommandHandler implements ICustomRequestHandler<
         "code" in error &&
         (error as any).code === "P2002"
       ) {
-        return Result.Failure(Error.Conflict(`${command.username} already exists`));
+        return Result.Failure(
+          Error.Conflict(`${command.username} already exists`),
+        );
       }
       throw error;
     }
-
-    const registerResponse: UserResponseDto = {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      roles: user.roles,
-    };
-    return Result.Success<UserResponseDto>(registerResponse);
   }
 }

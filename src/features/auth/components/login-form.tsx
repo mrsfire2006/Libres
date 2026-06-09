@@ -28,7 +28,7 @@ export function LoginForm() {
 
         <h3 className="text-2xl">Login</h3>
       </div>
-      <div className="relative">
+      <div className="relative w-full">
 
         <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         <input
@@ -36,13 +36,17 @@ export function LoginForm() {
           value={data?.email}
           onChange={(e) => setData({ ...data, email: e.target.value })}
           name="email"
-          placeholder="Email address"
-          className="w-full h-12 pl-10 pr-4 border rounded-xl bg-background text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+
+          placeholder=""
+          className="peer w-full h-14 pl-10 pr-12 pt-4 border border-input focus:ring-primary/30 focus:border-primary rounded-xl bg-background text-sm text-foreground outline-none focus:ring-2 transition-all"
           required
         />
+        <label className="absolute left-10 top-4 text-sm text-muted-foreground transition-all peer-focus:top-2 peer-focus:text-xs peer-focus:text-primary peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:text-xs pointer-events-none">
+          Email
+        </label>
       </div>
 
-      <div className="relative">
+      <div className="relative w-full">
         <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
         <input
           type={showPassword ? "text" : "password"}
@@ -50,10 +54,14 @@ export function LoginForm() {
           value={data?.password}
           onChange={(e) => setData({ ...data, password: e.target.value })}
 
-          placeholder="Password"
-          className="w-full h-12 pl-10 pr-12 border rounded-xl bg-background text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+          placeholder=" "
+          className="peer w-full h-14 pl-10 pr-12 pt-4 border border-input focus:ring-primary/30 focus:border-primary rounded-xl bg-background text-sm text-foreground outline-none focus:ring-2 transition-all"
           required
         />
+        <label className="absolute left-10 top-4 text-sm text-muted-foreground transition-all peer-focus:top-2 peer-focus:text-xs peer-focus:text-primary peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:text-xs pointer-events-none">
+          Password
+        </label>
+
         <button
           type="button"
           onClick={() => setShowPassword((p) => !p)}

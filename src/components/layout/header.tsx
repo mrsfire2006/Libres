@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Store, Library, BookOpen, Menu, X, LogOut, User } from "lucide-react";
+import { Store, Library, BookOpen, Menu, X, LogOut, User, Wallet } from "lucide-react";
 import { ROUTES } from "@/constants/constant";
 import { useSession, signOut } from "next-auth/react";
 import { Button } from "../ui/button";
@@ -16,12 +16,11 @@ const navLinks = [
 
 export default function Header() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    
+
 
     const { data: session, status } = useSession();
     const isAuthenticated = status === "authenticated";
     const isLoading = status === "loading";
-
     return (
         <header className="sticky top-0 z-50 w-full border-border border-b bg-background/95 backdrop-blur-md">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
@@ -70,9 +69,26 @@ export default function Header() {
                         </>
                     ) : (
                         <div className="flex items-center gap-3 pl-2">
-                            <Link href={ROUTES.PROFILE} className="text-sm font-medium text-muted-foreground flex items-center gap-1 bg-muted px-2.5 py-1 rounded-full">
-                                <User className="h-4 w-4" />
-                                {session?.user?.name} <sub>{session?.user?.role ? UserRoles[session.user.role] : ""}</sub>
+                            <Link href={ROUTES.PROFILE} className="flex items-center gap-2.5 bg-background border border-border rounded-full px-3.5 py-1.5 hover:bg-muted transition-colors">
+                                {/* Avatar */}
+                                <div className="w-8.5 h-8.5 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-700 dark:text-blue-300 text-[13px] font-medium shrink-0">
+                                    {session?.user?.name?.slice(0, 2).toUpperCase()}
+                                </div>
+
+                                {/* Name + Role */}
+                                <div className="flex flex-col leading-tight">
+                                    <span className="text-[13px] font-medium text-foreground">{session?.user?.name}</span>
+                                    <span className="text-[11px] text-muted-foreground">{UserRoles[session.user.role]}</span>
+                                </div>
+
+                                {/* Divider */}
+                                <div className="w-px h-5.5 bg-border mx-1" />
+
+                                {/* Balance */}
+                                <div className="flex items-center gap-1 text-[13px] font-medium text-emerald-600 dark:text-emerald-400">
+                                    <Wallet className="h-3.5 w-3.5" />
+                                    ${session?.user?.balance}
+                                </div>
                             </Link>
                             <Button
                                 onClick={() => signOut({ callbackUrl: "/" })}
@@ -89,7 +105,19 @@ export default function Header() {
 
                 {/* Mobile Actions Button */}
                 <div className="flex md:hidden items-center gap-2">
+                    {isAuthenticated && (
+                        <Link href={ROUTES.PROFILE} className="flex items-center gap-2 bg-background border border-border rounded-full px-2.5 py-1 hover:bg-muted transition-colors">
+                            <div className="w-7 h-7 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-700 dark:text-blue-300 text-[11px] font-medium shrink-0">
+                                {session?.user?.name?.slice(0, 2).toUpperCase()}
+                            </div>
+                            <div className="flex items-center gap-1 text-[12px] font-medium text-emerald-600 dark:text-emerald-400">
+                                <Wallet className="h-3 w-3" />
+                                ${session?.user?.balance}
+                            </div>
+                        </Link>
+                    )}
                     <ToggleTheme />
+
 
                     <Button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -145,10 +173,7 @@ export default function Header() {
                         </div>
                     ) : (
                         <div className="flex items-center justify-between px-3 py-2 bg-muted rounded-lg">
-                            <Link href={ROUTES.PROFILE} className="text-sm font-medium">
-                                <p className="text-foreground">{session?.user?.name}</p>
-                                <p className="text-xs text-muted-foreground">{session?.user?.role ? UserRoles[session.user.role] : ""}</p>
-                            </Link>
+
                             <Button
                                 onClick={() => signOut({ callbackUrl: "/" })}
                                 className="flex items-center gap-1 text-sm text-card font-medium"

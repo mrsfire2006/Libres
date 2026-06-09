@@ -29,13 +29,13 @@ export async function loginAction(formData: FormData) {
     }
 
     const userDto = result.value!;
-
     await signIn("credentials", {
       id: userDto.id,
       name: userDto.username,
       email: userDto.email,
       role: userDto.roles,
       password: password,
+      balance: userDto.balance,
       redirect: false,
     });
     return Result.Success<void>(undefined).toPlain();
