@@ -38,6 +38,7 @@ export class EditUserCommandHandler implements ICustomRequestHandler<
       username: user.username,
       email: user.email,
       roles: user.roles,
+      balance: user.wallet.balance
     };
 
     return Result.Success<UserResponseDto>(registerResponse);
