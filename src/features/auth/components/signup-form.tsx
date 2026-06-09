@@ -132,7 +132,7 @@ export default function SignupForm() {
             <div className="text-center text-sm text-muted-foreground pt-2">
                 Already have an account?{" "}
                 <Link
-                    href={ROUTES.AUTHLOGIN}  
+                    href={ROUTES.AUTHLOGIN}
                     className="text-primary font-medium hover:underline transition-all"
                 >
                     Sign in
