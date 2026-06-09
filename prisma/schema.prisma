@@ -1,0 +1,58 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             String   @id @default(uuid())
+  username       String   @unique
+  email          String   @unique
+  passwordHashed String
+  image          String?
+  userStatus     String   @default("ACTIVE")
+  roles          Int      @default(1)
+  createdAt      DateTime @default(now())
+  wallet         Wallet?
+  books          Book[]
+}
+
+model Wallet {
+  id         String    @id @default(uuid())
+  balance    Float     @default(500.0)
+  currency   String    @default("$")
+  status     String    @default("ACTIVE")
+  createdAt  DateTime  @default(now())
+  lastUpdate DateTime? @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  // transactions WalletTransaction[]
+}
+
+model Book {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Decimal  @default(0.0) @db.Decimal(10, 2)
+  order       Int      @default(0)
+  bookStatus  String   @default("PENDING")
+  accessLink  String
+  rating      Float    @default(0.0)
+  fingerPrint String
+  createdAt   DateTime @default(now())
+
+  userId     String
+  categoryId String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  // category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  // images   Image[]
+  // reviews  Review[]
+  // tagBooks TagBook[]
+}
