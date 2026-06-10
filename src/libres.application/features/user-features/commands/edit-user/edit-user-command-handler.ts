@@ -20,27 +20,27 @@ export class EditUserCommandHandler implements ICustomRequestHandler<
   ) {}
 
   async handle(request: EditUserCommand): Promise<Result<UserResponseDto>> {
-    const user = await this.userRepository.findUserById(request.id);
+    // const user = await this.userRepository.findUserById(request.id);
 
-    if (!user) {
-      return Result.Failure(Error.NotFound("User not found"));
-    }
+    // if (!user) {
+    //   return Result.Failure(Error.NotFound("User not found"));
+    // }
 
-    if (request.username) {
-      user.changeName(request.username);
-    }
-    // user.changeImage(request.image);
+    // if (request.username) {
+    //   user.changeName(request.username);
+    // }
+    // // user.changeImage(request.image);
 
-    await this.userRepository.save(user);
+    // await this.userRepository.save(user);
 
-    const registerResponse: UserResponseDto = {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      roles: user.roles,
-      balance: user.wallet.balance
-    };
+    // const registerResponse: UserResponseDto = {
+    //   id: user.id,
+    //   username: user.username,
+    //   email: user.email,
+    //   roles: user.roles,
+    // };
 
-    return Result.Success<UserResponseDto>(registerResponse);
+    // return Result.Success<UserResponseDto>(registerResponse);
+    return Result.Failure(Error.Validation(""))
   }
 }
