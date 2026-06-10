@@ -2,19 +2,15 @@ import { ICustomRequestHandler } from "@/libres.application/interfaces/IcustomRe
 import { inject, injectable } from "tsyringe";
 import { CreateUserCommand } from "./create-user-command";
 import { User } from "@/libres.domain/aggregates/User";
-import { prisma } from "@/libres.infrastructure/db/prisma";
 import type { IPasswordHasher } from "@/libres.domain/interfaces/Ipassword-hasher";
-import type { IRandomTokenGenerator } from "@/libres.domain/interfaces/Irandom-token-generator";
 import { Result } from "@/libres.domain/common/result";
-import type { ITokenService } from "@/libres.application/interfaces/ItokenService";
 import { Error } from "@/libres.domain/common/error";
 import { UserRoles } from "@/libres.domain/enums/user-roles";
 import type { IUserRepository } from "@/libres.domain/interfaces/repositories/Iuser-repository";
 import { UserResponseDto } from "../../commons/user-response-dto";
-import { Types } from "@prisma/client/runtime/client";
 import type { IWalletRepository } from "@/libres.domain/interfaces/repositories/Iwallet-repository";
 import { Wallet } from "@/libres.domain/aggregates/Wallet";
-
+import * as DB from "@/libres.infrastructure/db";
 @injectable()
 export class CreateUserCommandHandler implements ICustomRequestHandler<
   CreateUserCommand,
@@ -28,6 +24,7 @@ export class CreateUserCommandHandler implements ICustomRequestHandler<
 
     @inject("IWalletRepository")
     private walletRepository: IWalletRepository,
+    @inject("DATABASE_INSTANCE") private readonly database: DB.DbType,
   ) {}
 
   async handle(command: CreateUserCommand): Promise<Result<UserResponseDto>> {
@@ -70,7 +67,7 @@ export class CreateUserCommandHandler implements ICustomRequestHandler<
 
     const user = result.value!;
     try {
-      return await prisma.$transaction(async (tx) => {
+      return await this.database.transaction(async (tx) => {
         await this.userRepository.save(user, tx);
         const wallet = Wallet.create(user.id);
 
@@ -85,7 +82,6 @@ export class CreateUserCommandHandler implements ICustomRequestHandler<
           username: user.username,
           email: user.email,
           roles: user.roles,
-          balance: wallet.value?.balance!,
         };
 
         return Result.Success<UserResponseDto>(registerResponse);

@@ -1,31 +1,30 @@
 import { Wallet } from "@/libres.domain/aggregates/Wallet";
 import { IWalletRepository } from "@/libres.domain/interfaces/repositories/Iwallet-repository";
-import { injectable } from "tsyringe";
-import { prisma } from "@/libres.infrastructure/db/prisma";
-import { Prisma } from "../../../generated/prisma/client";
-
+import { inject, injectable } from "tsyringe";
+import * as DB from "../db";
+import { WalletMapper } from "../mappers/wallet.mapper";
+import { walletsTable } from "../db/schemas/wallet.schema";
 @injectable()
 export class WalletRespository implements IWalletRepository {
-  constructor() {}
-  async save(wallet: Wallet, tx?: Prisma.TransactionClient): Promise<void> {
-    const client = tx || prisma;
-    await client.wallet.upsert({
-      where: { id: wallet.id },
-      create: {
-        id: wallet.id,
-        balance: wallet.balance,
-        createdAt: wallet.createdAt,
-        currency: wallet.currency,
-        lastUpdate: wallet.lastUpdate,
-        status: wallet.status,
-        userId: wallet.userId,
-      },
-      update: {
-        balance: wallet.balance,
-        currency: wallet.currency,
-        lastUpdate: wallet.lastUpdate,
-        status: wallet.status,
-      },
-    });
+  constructor(
+    @inject("DATABASE_INSTANCE") private readonly database: DB.DbType,
+  ) {}
+
+  async save(wallet: Wallet, tx?: DB.DbTransaction): Promise<void> {
+    const executor = tx || this.database;
+
+    const raw = WalletMapper.toPersistence(wallet);
+    await executor
+      .insert(walletsTable)
+      .values(raw)
+      .onConflictDoUpdate({
+        target: walletsTable.id,
+        set: {
+          balance: raw.balance,
+          currency: raw.currency,
+          status: raw.status,
+          lastUpdate: raw.lastUpdate,
+        },
+      });
   }
 }

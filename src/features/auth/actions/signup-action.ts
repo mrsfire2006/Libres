@@ -45,7 +45,6 @@ export async function signupAction(formData: FormData) {
       email: userDto.email,
       role: userDto.roles,
       password: password,
-      balance: userDto.balance,
       redirect: false,
     });
     return Result.Success<void>(undefined).toPlain();

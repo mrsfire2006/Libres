@@ -1,8 +1,8 @@
-export interface GetTopSellingsResponse {
-  bookId: string;
-  name: string;
-  description?: string | null;
-  authorName: string;
-  rating: number;
-  price: number;
-}
+// export interface GetTopSellingsResponseDto {
+//   bookId: string;
+//   name: string;
+//   description?: string | null;
+//   authorName: string;
+//   rating: number;
+//   price: number;
+// }

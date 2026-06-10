@@ -1,17 +1,17 @@
 'use client'
 
 import RankBadge from "@/components/shared/rang-badge";
-import { GetTopSellingsResponse } from "@/libres.application/features/book-features/queries/get-top-sellings/get-top-sellings-response";
-import { useEffect, useState } from "react";
+ import { useEffect, useState } from "react";
 import { Error } from "@/libres.domain/common/error";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import BookCard from "@/components/shared/book-card";
 import GetTopSellingsAction from "../actions/get-top-sellings-action";
 import LoadingCircle from "@/components/shared/loading-circle";
+import { BookDto } from "@/libres.application/features/book-features/common/book-dto";
 
 
 function TopSelling() {
-    const [sellings, setSellings] = useState<GetTopSellingsResponse[] | undefined>([]);
+    const [sellings, setSellings] = useState<BookDto[] | undefined>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | undefined>(Error.None);
 

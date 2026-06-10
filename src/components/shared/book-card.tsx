@@ -1,13 +1,15 @@
 'use client'
 import Link from "next/link"
 import { Star } from "lucide-react"
-import { Card, CardContent, CardFooter } from "@/components/ui/card"
-import { GetTopSellingsResponse } from "@/libres.application/features/book-features/queries/get-top-sellings/get-top-sellings-response"
+import { Card, CardContent } from "@/components/ui/card"
+import { BookDto } from "@/libres.application/features/book-features/common/book-dto"
 
 
 
 
-function BookCard({ book }: { book: GetTopSellingsResponse }) {
+function BookCard({ book }: { book: BookDto }) {
+
+    
 
     return (
         <Link href={`/books/${book.bookId}`} className="group/card overflow-hidden flex flex-col gap-3 min-w-40 max-w-45 w-45">
@@ -51,7 +53,7 @@ function BookCard({ book }: { book: GetTopSellingsResponse }) {
                 {/* تفاصيل الكتاب تحت الغلاف */}
                 <div className="flex flex-col gap-1   px-1">
                     <h3 className="font-medium text-sm leading-tight line-clamp-1 group-hover/card:text-primary text-foreground transition-colors">
-                        {book.name}
+                        {book.authorName}
                     </h3>
                     <p className="text-xs text-muted-foreground">
                         {book.authorName}
@@ -62,13 +64,13 @@ function BookCard({ book }: { book: GetTopSellingsResponse }) {
 
                         {/* السعر */}
                         <span className="text-sm font-semibold text-foreground">
-                            ${book.price.toFixed(2)}
+                            ${book.price}
                         </span>
                         {/* التقييم */}
                         <div className="flex items-center gap-1">
                             <Star className="h-3 w-3 fill-primary text-primary border-none" />
                             <span className="text-xs font-medium text-foreground">
-                                {book.rating.toFixed(1)}
+                                {""}
                             </span>
                         </div>
                     </div>

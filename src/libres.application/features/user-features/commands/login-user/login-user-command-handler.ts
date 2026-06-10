@@ -17,6 +17,7 @@ export class LoginUserCommandHandler implements ICustomRequestHandler<
     private readonly userRepository: IUserRepository,
     @inject("IPasswordHasher")
     private readonly passwordHasher: IPasswordHasher,
+
   ) {}
   async handle(request: LoginUserCommand): Promise<Result<UserResponseDto>> {
     if (!request.email || !request.password) {
@@ -45,7 +46,7 @@ export class LoginUserCommandHandler implements ICustomRequestHandler<
       username: user.username,
       email: user.email,
       roles: user.roles,
-      balance: user.wallet?.balance!,
+      
     };
 
     return Result.Success<UserResponseDto>(loginResponse);

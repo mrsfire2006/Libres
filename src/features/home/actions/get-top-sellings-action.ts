@@ -1,9 +1,9 @@
 "use server";
 
 import { getMediator } from "@/lib/mediator";
+import { BookDto } from "@/libres.application/features/book-features/common/book-dto";
 import { GetTopSellingsQuery } from "@/libres.application/features/book-features/queries/get-top-sellings/get-top-sellings-query";
-import { GetTopSellingsResponse } from "@/libres.application/features/book-features/queries/get-top-sellings/get-top-sellings-response";
-import { Result } from "@/libres.domain/common/result";
+ import { Result } from "@/libres.domain/common/result";
 import { unstable_cache } from "next/cache";
 
 const getCachedTopSellingsData = unstable_cache(
@@ -12,14 +12,14 @@ const getCachedTopSellingsData = unstable_cache(
 
     const getTopSellingsQuery = new GetTopSellingsQuery();
 
-    const result: Result<GetTopSellingsResponse[]> =
+    const result: Result<BookDto[]> =
       await mediator.send(getTopSellingsQuery);
 
     return result.toPlain();
   },
   ["top-sellings-10min"],
   {
-    revalidate: 1,
+    revalidate: 10,
   },
 );
 

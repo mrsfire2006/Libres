@@ -1,9 +1,9 @@
 import { ICustomRequest } from "@/libres.application/interfaces/IcustomRequest";
-import { GetTopSellingsResponse } from "./get-top-sellings-response";
 import { Result } from "@/libres.domain/common/result";
+import { BookDto } from "../../common/book-dto";
 
 export class GetTopSellingsQuery implements ICustomRequest<
-  Result<GetTopSellingsResponse[]>
+  Result<BookDto[]>
 > {
   public static readonly type = "GetTopSellingsQuery";
 }

@@ -87,7 +87,7 @@ export default function Header() {
                                 {/* Balance */}
                                 <div className="flex items-center gap-1 text-[13px] font-medium text-emerald-600 dark:text-emerald-400">
                                     <Wallet className="h-3.5 w-3.5" />
-                                    ${session?.user?.balance}
+                                    {/* ${session?.user?.balance} */}
                                 </div>
                             </Link>
                             <Button
@@ -112,7 +112,7 @@ export default function Header() {
                             </div>
                             <div className="flex items-center gap-1 text-[12px] font-medium text-emerald-600 dark:text-emerald-400">
                                 <Wallet className="h-3 w-3" />
-                                ${session?.user?.balance}
+                                {/* ${session?.user?.balance ?? 0} */}
                             </div>
                         </Link>
                     )}

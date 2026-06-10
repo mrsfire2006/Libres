@@ -1,87 +1,65 @@
 import { User } from "@/libres.domain/aggregates/User";
 import { IUserRepository } from "@/libres.domain/interfaces/repositories/Iuser-repository";
-import { prisma } from "../db/prisma";
-import { injectable } from "tsyringe";
-import { UserRoles } from "@/libres.domain/enums/user-roles";
-import { UserStatus } from "@/libres.domain/enums/user-status";
-import { Prisma } from "../../../generated/prisma/client";
-import { Wallet } from "@/libres.domain/aggregates/Wallet";
-import { WalletStatus } from "@/libres.domain/enums/wallet-status";
+import { inject, injectable } from "tsyringe";
+import { DbTransaction } from "../db";
+import * as DB from "../db";
+import { usersTable } from "../db/schemas/user.schema";
+import { UserMapper } from "../mappers/user-mapper";
+import { walletsTable } from "../db/schemas/wallet.schema";
+import { eq } from "drizzle-orm";
 
 @injectable()
 export class UserRepository implements IUserRepository {
-  async save(user: User, tx?: Prisma.TransactionClient): Promise<void> {
-    const client = tx || prisma;
-    const imageValue =
-      user.image === undefined || user.image === null || user.image === ""
-        ? null
-        : user.image;
-    await client.user.upsert({
-      where: { id: user.id },
-      update: {
-        username: user.username,
-        email: user.email,
-        image: imageValue,
-        roles: user.roles,
-        userStatus: user.userStatus,
-      },
-      create: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        passwordHashed: user.passwordHashed,
-        image: imageValue,
-        roles: user.roles,
-        userStatus: user.userStatus,
-        createdAt: user.createdAt,
-      },
-    });
-  }
-  async findUserByEmail(email: string): Promise<User | null> {
-    const raw = await prisma.user.findUnique({
-      where: { email: email },
-      include: {
-        wallet: {
-          select: {
-            id: true,
-            balance: true,
-            status: true,
-          },
+  constructor(
+    @inject("DATABASE_INSTANCE") private readonly database: DB.DbType,
+  ) {}
+
+  async save(user: User, tx?: DbTransaction): Promise<void> {
+    const executor = tx || this.database;
+
+    const raw = UserMapper.toPersistence(user);
+    await executor
+      .insert(usersTable)
+      .values(raw)
+      .onConflictDoUpdate({
+        target: usersTable.id,
+        set: {
+          username: raw.username,
+          userStatus: raw.userStatus,
+          image: raw.image,
+          roles: raw.roles,
         },
-      },
-    });
-    if (!raw) return null;
-    const user = User.reconstitute(
-      raw.id,
-      raw.username,
-      raw.email,
-      raw.passwordHashed,
-      raw.image,
-      raw.roles as UserRoles,
-      raw.userStatus as UserStatus,
-      raw.createdAt,
-    );
-    user.setWallet(
-      raw.wallet?.id!,
-      raw.wallet?.balance!,
-      raw.wallet?.status as WalletStatus,
-    );
+      });
+  }
+
+  async findUserByEmail(email: string): Promise<User | null> {
+    const result = await this.database
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.email, email))
+      .execute();
+
+    if (result.length == 0) {
+      return null;
+    }
+    const user = UserMapper.toDomain(result[0]);
     return user;
   }
   async findUserById(id: string): Promise<User | null> {
-    const raw = await prisma.user.findUnique({
-      where: { id },
-    });
-    if (!raw) return null;
-    return User.reconstitute(
-      raw.id,
-      raw.username,
-      raw.email,
-      raw.passwordHashed,
-      raw.image,
-      raw.roles as UserRoles,
-      raw.userStatus as UserStatus,
-      raw.createdAt,
-    );
+    return null;
+    // const raw = await prisma.user.findUnique({
+    //   where: { id },
+    // });
+    // if (!raw) return null;
+    // return User.reconstitute(
+    //   raw.id,
+    //   raw.username,
+    //   raw.email,
+    //   raw.passwordHashed,
+    //   raw.image,
+    //   raw.roles as UserRoles,
+    //   raw.userStatus as UserStatus,
+    //   raw.createdAt,
+    // );
   }
 }

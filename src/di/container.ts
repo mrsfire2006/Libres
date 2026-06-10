@@ -20,6 +20,7 @@ import { IWalletRepository } from "@/libres.domain/interfaces/repositories/Iwall
 import { WalletRespository } from "@/libres.infrastructure/repositories/wallet-repository";
 import { IUserQueries } from "@/libres.application/features/user-features/queries/Iuser-queries";
 import { UserQueries } from "@/libres.infrastructure/queries/user-queries";
+import { db } from "@/libres.infrastructure/db";
 
 function registerDependencies() {
   container.registerSingleton<ICustomMediator>(
@@ -40,6 +41,7 @@ function registerDependencies() {
   container.register("GetBookByIdQueryHandler", GetBookByIdQueryHandler);
   container.register<IBookQueries>("IBookQueries", BookQueries);
   container.register<IUserQueries>("IUserQueries", UserQueries);
+  container.register('DATABASE_INSTANCE', { useValue: db });
 }
 
 if (!container.isRegistered("ICustomMediator")) {

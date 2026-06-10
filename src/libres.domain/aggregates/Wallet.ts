@@ -12,9 +12,22 @@ export class Wallet extends Aggregate {
   private _createdAt: Date = new Date();
   private _lastUpdate: Date | null = null;
 
-  protected constructor(id: string, userId: string) {
+  protected constructor(
+    id: string,
+    userId: string,
+    balance: number = 500,
+    status: WalletStatus = WalletStatus.ACTIVE,
+    currency: string = "$",
+    createdAt: Date = new Date(),
+    lastUpdate: Date | null = null,
+  ) {
     super(id);
     this._userId = userId;
+    this._balance = balance;
+    this._status = status;
+    this._currency = currency;
+    this._createdAt = createdAt;
+    this._lastUpdate = lastUpdate;
   }
 
   public get userId(): string {
@@ -53,11 +66,20 @@ export class Wallet extends Aggregate {
     userId: string,
     balance: number,
     status: WalletStatus,
+    currency: string,
+    createdAt: Date,
+    lastUpdate: Date | null,
   ) {
-    const wallet = new Wallet(id, userId);
+    const wallet = new Wallet(
+      id,
+      userId,
+      balance,
+      status,
+      currency,
+      createdAt,
+      lastUpdate,
+    );
 
-    wallet._balance = balance;
-    wallet._status = status;
     return wallet;
   }
 

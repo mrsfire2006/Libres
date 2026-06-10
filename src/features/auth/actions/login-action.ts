@@ -35,7 +35,6 @@ export async function loginAction(formData: FormData) {
       email: userDto.email,
       role: userDto.roles,
       password: password,
-      balance: userDto.balance,
       redirect: false,
     });
     return Result.Success<void>(undefined).toPlain();

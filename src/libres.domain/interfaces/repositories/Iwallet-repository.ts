@@ -1,6 +1,6 @@
 import { Wallet } from "@/libres.domain/aggregates/Wallet";
-import { Prisma } from "../../../../generated/prisma/client";
+import { DbTransaction } from "@/libres.infrastructure/db";
 
 export interface IWalletRepository {
-  save(wallet: Wallet, tx?: Prisma.TransactionClient): Promise<void>;
+  save(wallet: Wallet,tx?: DbTransaction): Promise<void>;
 }
