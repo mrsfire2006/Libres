@@ -1,0 +1,148 @@
+##################################
+# ASP.NET Core / .NET
+##################################
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# VS Code (اختياري - شيله لو عايز تشارك إعدادات الفريق)
+# .vscode/
+
+# NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+*.nuget.props
+*.nuget.targets
+
+# ASP.NET Core secrets & environment
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+*.pfx
+secrets.json
+*.env
+
+# EF Core
+Migrations/*.Designer.cs.bak
+
+# Test results
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+coverage/
+
+# Publish
+**/[Pp]ublish/
+*.Publish.xml
+PublishScripts/
+
+# DotNet CLI
+*.dotnet/
+
+
+##################################
+# React / Node.js (Vite / Next.js / CRA)
+##################################
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+.output/
+.vite/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Caches
+.eslintcache
+.stylelintcache
+.cache/
+.parcel-cache/
+.turbo/
+
+# Testing
+coverage/
+.nyc_output/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+
+##################################
+# OS / Editor
+##################################
+
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*~
+
+# VS Code shared settings (اختياري)
+.vscode/*
+!.vscode/extensions.json
+
+
+##################################
+# Misc
+##################################
+
+*.log
+*.tmp
+*.bak
+.env.backup

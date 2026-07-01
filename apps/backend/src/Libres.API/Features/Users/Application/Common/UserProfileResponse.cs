@@ -1,0 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Libres.API.Features.Users.Application.Common
+{
+    public record UserProfileResponse(Guid UserId,string Username, string Email, string? Image, string Roles);
+ 
+    
+}
