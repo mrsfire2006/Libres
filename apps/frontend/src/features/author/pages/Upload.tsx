@@ -1,11 +1,11 @@
 
 import { UploadCloud } from "lucide-react"
 import { FileUploader } from "@/features/author/components/file-uploader"
-import { useStore } from "@/features/store/store.hook"
+import { useCategories } from "@/features/store/store.hook"
 
 
 export default function UploadBookPage() {
-    const { data: categories } = useStore().getAllCategories;
+    const { data: categories } = useCategories();
 
 
 

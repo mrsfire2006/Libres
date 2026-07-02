@@ -32,9 +32,9 @@ function StorePage() {
   }
   console.log(books?.value)
 
-  const handlePageChange = (page: number) => {
-    setQuery((prev) => ({ ...prev, PageNumber: page }))
-  }
+  // const handlePageChange = (page: number) => {
+  //   setQuery((prev) => ({ ...prev, PageNumber: page }))
+  // }
   const TotalBooks = books?.value?.length;
   // const page = query?.PageNumber ?? 1
 

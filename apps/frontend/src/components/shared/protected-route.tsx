@@ -1,4 +1,4 @@
-import { ROUTES } from '@/constants';
+ import { HOMEROUTES } from '@/features/home/paths';
 import { UserRoles } from '@/features/user/type';
 import { useUser } from '@/features/user/user.hook';
 import type { ReactNode } from 'react';
@@ -12,7 +12,7 @@ export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
     const isAuthenticated = !!user?.value?.roles && user?.value?.roles.includes(UserRoles.Author);
     if (!isAuthenticated) {
 
-        return <Navigate to={ROUTES.LOGIN} replace />;
+        return <Navigate to={HOMEROUTES.INDEX} replace />;
     }
 
     return children;
