@@ -125,8 +125,8 @@ namespace Libres.API.Shared
                             options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
                             options.Cookie.HttpOnly = true;
 
-                            options.Cookie.SameSite = SameSiteMode.Lax;
-
+                            options.Cookie.SameSite = SameSiteMode.None;
+                            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                             options.Events.OnRedirectToLogin = context =>
                             {
                                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;

@@ -208,14 +208,14 @@ export default function HeaderActions() {
                     {!isAuthenticated ? (
                         <div className="flex flex-col gap-2 pt-1">
                             <Link
-                                to="/"
+                                to={AUTHROUTES.LOGIN}
                                 className="px-4 text-center text-foreground py-2.5 text-sm font-medium border border-border rounded-lg hover:bg-muted transition-colors"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
                                 Sign in
                             </Link>
                             <Link
-                                to="/"
+                                to={AUTHROUTES.REGISTER}
                                 className="px-4 text-center text-primary-foreground py-2.5 text-sm font-medium bg-primary rounded-lg hover:opacity-90 transition-opacity"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
