@@ -15,7 +15,7 @@ namespace Libres.API.Shared.Infrastructure.Configurations
         {
 
             builder.ToTable("Users");
-
+            builder.Property(x => x.Id).ValueGeneratedNever();
             builder.Ignore(u => u.TwoFactorEnabled);
             builder.Ignore(u => u.EmailConfirmed);
             builder.Ignore(u => u.AccessFailedCount);

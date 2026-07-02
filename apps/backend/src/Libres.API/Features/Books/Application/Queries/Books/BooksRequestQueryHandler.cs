@@ -24,35 +24,41 @@ namespace Libres.API.Features.Books.Application.Queries.Books
         }
         public async Task<Result<IEnumerable<BookResponse>>> HandleAsync(BooksRequestQuery request, CancellationToken cancellationToken)
         {
-            var skipAmount = (request.PageNumber - 1) * request.PageSize;
+            var pageNumber = request.PageNumber ?? 1;
+            var pageSize = request.PageSize ?? 10;
+            var skipAmount = (pageNumber - 1) * pageSize;
 
-            // ابدأ بجدول الكتب مباشرة دون عمل Join معقد يعطل النتيجة
-            IQueryable<Book> query = _context.Books.AsNoTracking();
+            var query = from book in _context.Books.AsNoTracking()
+                        join user in _context.Users on book.UserId equals user.Id
+                        join category in _context.Categories on book.CategoryId equals category.Id into categoryGroup
+                        from subCategory in categoryGroup.DefaultIfEmpty()
+                        select new { book, user, subCategory };
 
             if (request.categoryId.HasValue && request.categoryId.Value != Guid.Empty)
             {
-                query = query.Where(x => x.CategoryId == request.categoryId);
+                query = query.Where(x => x.book.CategoryId == request.categoryId);
             }
 
             var books = await query
-                        .OrderBy(x => x.Title)
-                        .Skip(skipAmount)
-                        .Take(request.PageSize)
-                        .Select(book => new BookResponse(
-                             book.Id,
-                             book.Title,
-                             _context.Users.Where(u => u.Id == book.UserId).Select(u => u.UserName).FirstOrDefault() ?? "",
-                             book.UserId,
-                             book.CategoryId,
-                             _context.Categories.Where(c => c.Id == book.CategoryId).Select(c => c.Name).FirstOrDefault() ?? "",
-                             book.Price,
-                             book.BookStatus.ToString(),
-                             book.Description,
-                             book.CreatedAt,
-                             book.CoverImagePath != null ? $"{_baseUrl}/{book.CoverImagePath}" : null,
-                             book.FilePath != null ? $"{_baseUrl}/{book.FilePath}" : null
-                        ))
-                        .ToListAsync(cancellationToken);
+                    .OrderBy(x => x.book.Title)
+                    .Skip(skipAmount)
+                    .Take(request.PageSize ?? 10)
+                    .Select(x => new BookResponse(
+                        x.book.Id,
+                        x.book.Title,
+                        x.user.UserName ?? "",
+                        x.book.UserId,
+                        x.book.CategoryId,
+                        x.subCategory != null ? (x.subCategory.Name ?? "") : "",
+
+                        x.book.Price,
+                        x.book.BookStatus.ToString(),
+                        x.book.Description,
+                        x.book.CreatedAt,
+                        x.book.CoverImagePath != null ? $"{_baseUrl}/{x.book.CoverImagePath}" : null,
+                        x.book.FilePath != null ? $"{_baseUrl}/{x.book.FilePath}" : null
+                    ))
+                    .ToListAsync(cancellationToken);
 
             return Result<IEnumerable<BookResponse>>.Success(books);
         }

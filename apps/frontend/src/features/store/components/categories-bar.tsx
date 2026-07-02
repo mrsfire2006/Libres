@@ -1,15 +1,21 @@
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
-import { useStore } from "../store.hook";
 import type { CategoryName } from "../type";
+import { useCategories } from "../store.hook";
+
 
 interface CategoriesBarProps {
     selectedCategory: CategoryName | null;
-    setSelectedCategory: (category: CategoryName | null) => void;
+    onCategoryChange: (category: CategoryName | null) => void;
 }
 
-export function CategoriesBar({ selectedCategory, setSelectedCategory }: CategoriesBarProps) {
-    const { data: categories } = useStore().getAllCategories;
+interface CategoriesBarProps {
+    selectedCategory: CategoryName | null;
+    onCategoryChange: (category: CategoryName | null) => void;
+}
+
+export function CategoriesBar({ selectedCategory, onCategoryChange }: CategoriesBarProps) {
+    const { data: categories } = useCategories();
 
     return (<div className="mb-6">
         <p className="text-sm text-muted-foreground mb-3">Categories</p>
@@ -21,7 +27,7 @@ export function CategoriesBar({ selectedCategory, setSelectedCategory }: Categor
                 {/* All */}
                 <CarouselItem className="basis-auto pl-2">
                     <button
-                        onClick={() => setSelectedCategory(null)}
+                        onClick={() => onCategoryChange(null)}
                         className={cn(
                             "px-4 py-1.5 rounded-full text-sm font-medium border transition-all",
                             selectedCategory === null
@@ -33,10 +39,10 @@ export function CategoriesBar({ selectedCategory, setSelectedCategory }: Categor
                     </button>
                 </CarouselItem>
 
-                {categories?.value && categories?.value.map((cat) => (
+                {categories?.value && categories.value.map((cat) => (
                     <CarouselItem key={cat.categoryId} className="basis-auto pl-2">
                         <button
-                            onClick={() => { setSelectedCategory(cat); console.log(cat) }}
+                            onClick={() => onCategoryChange(cat)}
                             className={cn(
                                 "px-4 py-1.5 rounded-full text-sm font-medium border transition-all whitespace-nowrap",
                                 selectedCategory?.categoryId === cat.categoryId

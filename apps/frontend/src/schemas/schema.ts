@@ -4,130 +4,7 @@
  */
 
 export interface paths {
-    "/api/auth/register": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["RegisterRequestDto"];
-                    "text/json": components["schemas"]["RegisterRequestDto"];
-                    "application/*+json": components["schemas"]["RegisterRequestDto"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ResultOfSigninResponseDto"];
-                        "application/json": components["schemas"]["ResultOfSigninResponseDto"];
-                        "text/json": components["schemas"]["ResultOfSigninResponseDto"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/login": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["LoginRequestDto"];
-                    "text/json": components["schemas"]["LoginRequestDto"];
-                    "application/*+json": components["schemas"]["LoginRequestDto"];
-                };
-            };
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ResultOfSigninResponseDto"];
-                        "application/json": components["schemas"]["ResultOfSigninResponseDto"];
-                        "text/json": components["schemas"]["ResultOfSigninResponseDto"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/auth/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description OK */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "text/plain": components["schemas"]["ResultOfstring"];
-                        "application/json": components["schemas"]["ResultOfstring"];
-                        "text/json": components["schemas"]["ResultOfstring"];
-                    };
-                };
-            };
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/books": {
+    "/api/book/upload": {
         parameters: {
             query?: never;
             header?: never;
@@ -152,6 +29,8 @@ export interface paths {
                         /** Format: uuid */
                         CategoryId?: string;
                         Description?: string;
+                        /** Format: double */
+                        Price?: number | string;
                         CoverImage?: components["schemas"]["IFormFile"];
                         File?: components["schemas"]["IFormFile"];
                     };
@@ -177,7 +56,142 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/books/booksbycategory": {
+    "/api/book/edit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/x-www-form-urlencoded": {
+                        /** Format: uuid */
+                        BookId?: string;
+                        Title?: string;
+                        Description?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ResultOfBookResponse"];
+                        "application/json": components["schemas"]["ResultOfBookResponse"];
+                        "text/json": components["schemas"]["ResultOfBookResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/book/delete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/x-www-form-urlencoded": {
+                        /** Format: uuid */
+                        BookId?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ResultOfBookResponse"];
+                        "application/json": components["schemas"]["ResultOfBookResponse"];
+                        "text/json": components["schemas"]["ResultOfBookResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/book/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/x-www-form-urlencoded": {
+                        /** Format: uuid */
+                        BookId?: string;
+                        BookStatus?: components["schemas"]["BookStatus"];
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ResultOfBookResponse"];
+                        "application/json": components["schemas"]["ResultOfBookResponse"];
+                        "text/json": components["schemas"]["ResultOfBookResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/book/books": {
         parameters: {
             query?: never;
             header?: never;
@@ -202,7 +216,11 @@ export interface paths {
                     headers: {
                         [name: string]: unknown;
                     };
-                    content?: never;
+                    content: {
+                        "text/plain": components["schemas"]["ResultOfIEnumerableOfBookResponse"];
+                        "application/json": components["schemas"]["ResultOfIEnumerableOfBookResponse"];
+                        "text/json": components["schemas"]["ResultOfIEnumerableOfBookResponse"];
+                    };
                 };
             };
         };
@@ -214,7 +232,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/categories/allCategories": {
+    "/api/category/categories": {
         parameters: {
             query?: never;
             header?: never;
@@ -236,9 +254,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ResultOfListOfCategoryNameResponseDto"];
-                        "application/json": components["schemas"]["ResultOfListOfCategoryNameResponseDto"];
-                        "text/json": components["schemas"]["ResultOfListOfCategoryNameResponseDto"];
+                        "text/plain": components["schemas"]["ResultOfIEnumerableOfCategoryResponse"];
+                        "application/json": components["schemas"]["ResultOfIEnumerableOfCategoryResponse"];
+                        "text/json": components["schemas"]["ResultOfIEnumerableOfCategoryResponse"];
                     };
                 };
             };
@@ -251,7 +269,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/edit": {
+    "/api/category/edit": {
         parameters: {
             query?: never;
             header?: never;
@@ -269,9 +287,9 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["ChangeCategoryRequestDto"];
-                    "text/json": components["schemas"]["ChangeCategoryRequestDto"];
-                    "application/*+json": components["schemas"]["ChangeCategoryRequestDto"];
+                    "application/json": components["schemas"]["EditCategoryRequestCommand"];
+                    "text/json": components["schemas"]["EditCategoryRequestCommand"];
+                    "application/*+json": components["schemas"]["EditCategoryRequestCommand"];
                 };
             };
             responses: {
@@ -281,9 +299,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ResultOfCategoryNameResponseDto"];
-                        "application/json": components["schemas"]["ResultOfCategoryNameResponseDto"];
-                        "text/json": components["schemas"]["ResultOfCategoryNameResponseDto"];
+                        "text/plain": components["schemas"]["ResultOfstring"];
+                        "application/json": components["schemas"]["ResultOfstring"];
+                        "text/json": components["schemas"]["ResultOfstring"];
                     };
                 };
             };
@@ -294,7 +312,173 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/users/me": {
+    "/api/category/add": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AddCategoryRequestCommand"];
+                    "text/json": components["schemas"]["AddCategoryRequestCommand"];
+                    "application/*+json": components["schemas"]["AddCategoryRequestCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ResultOfCategoryResponse"];
+                        "application/json": components["schemas"]["ResultOfCategoryResponse"];
+                        "text/json": components["schemas"]["ResultOfCategoryResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/user/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RegisterRequestCommand"];
+                    "text/json": components["schemas"]["RegisterRequestCommand"];
+                    "application/*+json": components["schemas"]["RegisterRequestCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ResultOfSigninResponse"];
+                        "application/json": components["schemas"]["ResultOfSigninResponse"];
+                        "text/json": components["schemas"]["ResultOfSigninResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/user/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["LoginRequestCommand"];
+                    "text/json": components["schemas"]["LoginRequestCommand"];
+                    "application/*+json": components["schemas"]["LoginRequestCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ResultOfSigninResponse"];
+                        "application/json": components["schemas"]["ResultOfSigninResponse"];
+                        "text/json": components["schemas"]["ResultOfSigninResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/user/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ResultOfSigninResponse"];
+                        "application/json": components["schemas"]["ResultOfSigninResponse"];
+                        "text/json": components["schemas"]["ResultOfSigninResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/user/me": {
         parameters: {
             query?: never;
             header?: never;
@@ -316,9 +500,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ResultOfUserProfileDto"];
-                        "application/json": components["schemas"]["ResultOfUserProfileDto"];
-                        "text/json": components["schemas"]["ResultOfUserProfileDto"];
+                        "text/plain": components["schemas"]["ResultOfUserProfileResponse"];
+                        "application/json": components["schemas"]["ResultOfUserProfileResponse"];
+                        "text/json": components["schemas"]["ResultOfUserProfileResponse"];
                     };
                 };
             };
@@ -335,28 +519,38 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AddCategoryRequestCommand: {
+            name: string;
+            description: null | string;
+        };
         BookResponse: {
             /** Format: uuid */
-            id?: string;
-            title?: string;
-            author?: string;
+            id: string;
+            title: string;
+            author: string;
             /** Format: uuid */
-            userId?: string;
+            userId: string;
             /** Format: uuid */
-            categoryId?: null | string;
-            categoryName?: null | string;
-            description?: null | string;
+            categoryId: null | string;
+            categoryName: null | string;
+            /** Format: double */
+            price: number | string;
+            bookStatus: string;
+            description: null | string;
             /** Format: date-time */
-            createdAt?: string;
-            coverImageUrl?: null | string;
-            fileUrl?: null | string;
+            createdAt: string;
+            coverImageUrl: null | string;
+            fileUrl: null | string;
         };
-        CategoryNameResponseDto: {
+        /** @enum {unknown} */
+        BookStatus: "Accepted" | "Rejected" | "Pending";
+        CategoryResponse: {
             /** Format: uuid */
             categoryId: string;
             name: string;
+            description?: null | string;
         };
-        ChangeCategoryRequestDto: {
+        EditCategoryRequestCommand: {
             categoryId: string;
             newName: string;
             newDescription: null | string;
@@ -368,11 +562,11 @@ export interface components {
         ErrorType: number;
         /** Format: binary */
         IFormFile: string;
-        LoginRequestDto: {
+        LoginRequestCommand: {
             email: string;
             password: string;
         };
-        RegisterRequestDto: {
+        RegisterRequestCommand: {
             username: string;
             email: string;
             password: string;
@@ -385,22 +579,28 @@ export interface components {
             value?: components["schemas"]["BookResponse"];
             error?: components["schemas"]["Error"];
         };
-        ResultOfCategoryNameResponseDto: {
+        ResultOfCategoryResponse: {
             isSuccess?: boolean;
             isFailure?: boolean;
-            value?: components["schemas"]["CategoryNameResponseDto"];
+            value?: components["schemas"]["CategoryResponse"];
             error?: components["schemas"]["Error"];
         };
-        ResultOfListOfCategoryNameResponseDto: {
+        ResultOfIEnumerableOfBookResponse: {
             isSuccess?: boolean;
             isFailure?: boolean;
-            value?: null | components["schemas"]["CategoryNameResponseDto"][];
+            value?: null | components["schemas"]["BookResponse"][];
             error?: components["schemas"]["Error"];
         };
-        ResultOfSigninResponseDto: {
+        ResultOfIEnumerableOfCategoryResponse: {
             isSuccess?: boolean;
             isFailure?: boolean;
-            value?: components["schemas"]["SigninResponseDto"];
+            value?: null | components["schemas"]["CategoryResponse"][];
+            error?: components["schemas"]["Error"];
+        };
+        ResultOfSigninResponse: {
+            isSuccess?: boolean;
+            isFailure?: boolean;
+            value?: components["schemas"]["SigninResponse"];
             error?: components["schemas"]["Error"];
         };
         ResultOfstring: {
@@ -409,23 +609,28 @@ export interface components {
             value?: null | string;
             error?: components["schemas"]["Error"];
         };
-        ResultOfUserProfileDto: {
+        ResultOfUserProfileResponse: {
             isSuccess?: boolean;
             isFailure?: boolean;
-            value?: components["schemas"]["UserProfileDto"];
+            value?: components["schemas"]["UserProfileResponse"];
             error?: components["schemas"]["Error"];
         };
-        SigninResponseDto: {
+        SigninResponse: {
             /** Format: uuid */
             userId: string;
         };
-        UserProfileDto: {
+        UserProfileResponse: {
             /** Format: uuid */
             userId: string;
             username: string;
             email: string;
             image: null | string;
             roles: string;
+            /**
+             * Format: double
+             * @default 15
+             */
+            balance: number | string;
         };
         /** @default Reader */
         UserRoles: string;

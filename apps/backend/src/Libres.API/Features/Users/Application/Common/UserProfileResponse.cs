@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Libres.API.Features.Users.Application.Common
 {
-    public record UserProfileResponse(Guid UserId,string Username, string Email, string? Image, string Roles);
- 
-    
+    public record UserProfileResponse(Guid UserId, string Username, string Email, string? Image, string Roles, decimal Balance = 15);
+
+
 }

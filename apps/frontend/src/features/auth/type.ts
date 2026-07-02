@@ -1,8 +1,8 @@
 import type { ApiSchemas } from "@/schemas/api-schema";
 
-export type LoginRequest = ApiSchemas["LoginRequestDto"];
-export type RegisterRequest = ApiSchemas["RegisterRequestDto"];
-export type ResultOfSigninResponse = ApiSchemas["ResultOfSigninResponseDto"];
+export type LoginRequest = ApiSchemas["LoginRequestCommand"];
+export type RegisterRequest = ApiSchemas["RegisterRequestCommand"];
+export type ResultOfSigninResponse = ApiSchemas["ResultOfSigninResponse"];
 
 export const UserRoles = {
   Reader: 1,

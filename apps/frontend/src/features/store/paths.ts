@@ -4,4 +4,5 @@ export const STOREROUTES = {
 
 export const APISTOREROUTES = {
   ALLCATEGORIES: "category/categories",
+  BOOKS: "book/books",
 };

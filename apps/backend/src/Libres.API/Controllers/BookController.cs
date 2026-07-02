@@ -32,7 +32,11 @@ namespace Libres.API.Controllers
         [ProducesResponseType(typeof(Result<BookResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateBook([FromForm] CreateBookRequest request, CancellationToken cancellationToken)
         {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            request.UserId = Guid.Parse(userId!);
+            
             var result = await _mediator.SendAsync(request, cancellationToken);
+
             return HandleResult(result);
         }
         [HttpPost("edit")]

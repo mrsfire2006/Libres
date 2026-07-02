@@ -26,7 +26,7 @@ export async function clientFetch<T>(
     } as unknown as Result<T>;
   }
 
-  const data : Result<T>= await response.json().catch(() => null);
+  const data: Result<T> = await response.json().catch(() => null);
 
   if (!response.ok) {
     return {
@@ -34,7 +34,8 @@ export async function clientFetch<T>(
       isFailure: true,
       value: null as T,
       error: {
-        message: data?.error?.message || `خطأ من الخادم بحالة: ${response.status}`,
+        message:
+          data?.error?.message || `خطأ من الخادم بحالة: ${response.status}`,
         type: response.status,
       },
     };

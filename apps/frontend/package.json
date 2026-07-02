@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate-types": "pnpm openapi-typescript http://localhost:5267/openapi/v1.json -o src/schemas/schema.ts"
+    "generate-types": "pnpm openapi-typescript http://localhost:5045/openapi/v1.json -o src/schemas/schema.ts"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",

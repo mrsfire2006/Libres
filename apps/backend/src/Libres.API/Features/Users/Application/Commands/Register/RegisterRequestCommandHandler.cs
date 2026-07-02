@@ -18,11 +18,13 @@ namespace Libres.API.Features.Users.Application.Commands.Register
         private readonly AppDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        public RegisterRequestCommandHandler(AppDbContext context, UserManager<User> userManager, SignInManager<User> signInManager)
+        private readonly CustomMediator _eventDispatcher;
+        public RegisterRequestCommandHandler(AppDbContext context, UserManager<User> userManager, SignInManager<User> signInManager, CustomMediator eventDispatcher)
         {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
+            _eventDispatcher = eventDispatcher;
         }
         public async Task<Result<SigninResponse>> HandleAsync(RegisterRequestCommand request, CancellationToken cancellationToken)
         {
@@ -59,32 +61,53 @@ namespace Libres.API.Features.Users.Application.Commands.Register
 
 
 
-
-            switch (role)
-            {
-                case UserRoles.Author:
-                    role |= UserRoles.Reader;
-                    break;
-                default:
-                    break;
-            }
-
-
             var userResult = User.Create(request.Username, request.Email, request.password, null, role);
             var user = userResult.Value!;
 
-            var createResult = await _userManager.CreateAsync(user, request.password);
-            if (!createResult.Succeeded)
+
+            using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+            try
             {
-                var firstError = createResult.Errors.First().Description;
-                return Result<SigninResponse>.Failure(Error.Validation(firstError));
+                var createResult = await _userManager.CreateAsync(user, request.password);
+
+
+                if (!createResult.Succeeded)
+                {
+                    var firstError = createResult.Errors.First().Description;
+                    return Result<SigninResponse>.Failure(Error.Validation(firstError));
+                }
+                if(role != UserRoles.Reader)
+                {
+                    user.ClearDomainEvents();
+                }
+
+                while (user.DomainEvents.Any())
+                {
+                    var domainEvents = user.DomainEvents.ToList();
+                    user.ClearDomainEvents();
+
+                    foreach (var domainEvent in domainEvents)
+                    {
+                        await _eventDispatcher.PublishAsync(domainEvent, cancellationToken);
+                    }
+                }
+
+                await _context.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+
+
+                await _signInManager.SignInAsync(user, true);
+
+                return Result<SigninResponse>.Success(new SigninResponse(user.Id));
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw;
             }
 
 
 
-            await _signInManager.SignInAsync(user, true);
-
-            return Result<SigninResponse>.Success(new SigninResponse(user.Id));
         }
 
         private async Task<string?> SaveImageAsync(IFormFile? file, string folder)

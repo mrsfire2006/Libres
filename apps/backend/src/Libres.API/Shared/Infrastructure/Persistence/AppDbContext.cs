@@ -2,6 +2,7 @@
 using Libres.API.Features.Books.Domain;
 using Libres.API.Features.Categories.Domain;
 using Libres.API.Features.Users.Domain;
+using Libres.API.Features.Wallet.Domain;
 using Libres.API.Shared.Infrastructure.Configurations;
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
@@ -19,6 +20,7 @@ namespace Libres.API.Data.Persistence
 
 
         public DbSet<Category> Categories { get; set; } = null!;
+        public DbSet<Wallet> Wallets { get; set; } = null!;
 
         public DbSet<Book> Books { get; set; } = null!;
 

@@ -3,22 +3,40 @@ import { useState } from "react"
 
 import SubTitle from "@/components/shared/sub-title"
 import { CategoriesBar } from "@/features/store/components/categories-bar"
-import type { CategoryName } from "@/features/store/type"
+import type { BookRequestQuery, CategoryName } from "@/features/store/type"
+import LoadingCircle from "@/components/shared/loading-circle"
+import { useBooks } from "../store.hook"
+import BookCard from "../components/book-card"
 
-// const ITEMS_PER_PAGE = 24
 
+const ITEMS_PER_PAGE = 24
 
 
 function StorePage() {
-  // const [books, setBooks] = useState<GetAllBooksResponse[]>([])
-  // const [filteredBooks, setFilteredBooks] = useState<GetAllBooksResponse[]>([])
   const [selectedCategory, setSelectedCategory] = useState<CategoryName | null>(null)
-  // const [search, setSearch] = useState("")
-  // const [page, setPage] = useState(1)
 
+  const [query, setQuery] = useState<BookRequestQuery>({
+    categoryId: undefined,
+    PageNumber: 1,
+    PageSize: ITEMS_PER_PAGE,
+  })
+  const { data: books, isLoading } = useBooks(query)
 
+  const handleCategoryChange = (category: CategoryName | null) => {
+    setSelectedCategory(category)
+    setQuery((prev) => ({
+      ...prev,
+      categoryId: category?.categoryId,
+      PageNumber: 1,
+    }))
+  }
+  console.log(books?.value)
 
-
+  const handlePageChange = (page: number) => {
+    setQuery((prev) => ({ ...prev, PageNumber: page }))
+  }
+  const TotalBooks = books?.value?.length;
+  // const page = query?.PageNumber ?? 1
 
 
   return (
@@ -39,41 +57,43 @@ function StorePage() {
             </div> */}
 
       {/* Categories Carousel */}
-      <CategoriesBar selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
-
+      <CategoriesBar
+        selectedCategory={selectedCategory}
+        onCategoryChange={handleCategoryChange}
+      />
       <div className="border-t border-border mb-5" />
 
       {/* Filter row */}
-      {/* <div className="flex items-center justify-between mb-5 flex-wrap gap-2">
-          <span className="text-sm text-muted-foreground">
-            Showing{" "}
-            <span className="font-medium text-foreground">
-              {filteredBooks.length}
-            </span>{" "}
-            books
-          </span>
-          <select className="text-sm border border-border rounded-md px-3 py-1.5 bg-card text-foreground outline-none cursor-pointer">
-            <option>Sort: Most Popular</option>
-            <option>Sort: Newest</option>
-            <option>Sort: Price ↑</option>
-            <option>Sort: Price ↓</option>
-          </select>
-        </div> */}
+      <div className="flex items-center justify-between mb-5 flex-wrap gap-2">
+        <span className="text-sm text-muted-foreground">
+          Showing{" "}
+          <span className="font-medium text-foreground">
+            {TotalBooks}
+          </span>{" "}
+          books
+        </span>
+        <select className="text-sm border border-border rounded-md px-3 py-1.5 bg-card text-foreground outline-none cursor-pointer">
+          <option>Sort: Most Popular</option>
+          <option>Sort: Newest</option>
+          <option>Sort: Price ↑</option>
+          <option>Sort: Price ↓</option>
+        </select>
+      </div>
 
       {/* Books Grid */}
-      {/* {loading ? (
-          <LoadingCircle />
-        ) : paginatedBooks.length === 0 ? (
-          <div className="text-center py-20 text-muted-foreground text-sm">
-            No books found.
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            {paginatedBooks.map((book) => (
-              <BookCard key={book.bookId} book={book} />
-            ))}
-          </div>
-        )} */}
+      {isLoading ? (
+        <LoadingCircle />
+      ) : books?.value!.length === 0 ? (
+        <div className="text-center py-20 text-muted-foreground text-sm">
+          No books found.
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          {books?.value!.map((book) => (
+            <BookCard key={book.id} book={book} />
+          ))}
+        </div>
+      )}
 
       {/* Pagination */}
       {/* {totalPages > 1 && (

@@ -16,25 +16,32 @@ namespace Libres.API.Shared
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddSharedApplicationServices(this IServiceCollection services)
+        public static IServiceCollection AddSharedApplicationServices(this IServiceCollection services, params Assembly[] assemblies)
         {
 
             services.AddScoped<CustomMediator>();
-            var assembly = Assembly.GetExecutingAssembly();
 
-            var handlerRegistrations = assembly.GetTypes()
-                .Where(t => !t.IsAbstract && !t.IsInterface)
-                .SelectMany(t => t.GetInterfaces()
-                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICustomRequestHandler<,>))
-                    .Select(i => new { Service = i, Implementation = t }));
-
-
-            foreach (var registration in handlerRegistrations)
+            foreach (var assembly in assemblies)
             {
-                services.AddTransient(registration.Service, registration.Implementation);
+                RegisterHandlers(services, assembly, typeof(ICustomRequestHandler<,>));
+                RegisterHandlers(services, assembly, typeof(ICustomNotificationHandler<>));
             }
 
             return services;
+        }
+
+        private static void RegisterHandlers(IServiceCollection services, Assembly assembly, Type openHandlerInterface)
+        {
+            var handlerTypes = assembly.GetTypes()
+                .Where(t => !t.IsAbstract && !t.IsInterface)
+                .SelectMany(t => t.GetInterfaces()
+                    .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == openHandlerInterface)
+                    .Select(i => new { Interface = i, Implementation = t }));
+
+            foreach (var handler in handlerTypes)
+            {
+                services.AddScoped(handler.Interface, handler.Implementation);
+            }
         }
         public static IServiceCollection AddSharedInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
@@ -54,7 +61,6 @@ namespace Libres.API.Shared
         {
 
             services.AddOpenApi();
-            services.AddControllers();
             services.AddControllers(options =>
 {
     options.Conventions.Add(new ApiRouteConvention());

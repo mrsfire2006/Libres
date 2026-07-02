@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Libres.API.Features.Users.Domain.Events;
 using Libres.API.Shared.Application.CustomError;
+using Libres.API.Shared.Application.Mediator;
 using Libres.API.Shared.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 
@@ -15,12 +17,22 @@ namespace Libres.API.Features.Users.Domain
         public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
         public UserRoles Roles { get; private set; }
 
+        private readonly List<ICustomNotification> _domainEvents = new List<ICustomNotification>();
+
+        public IReadOnlyCollection<ICustomNotification> DomainEvents => _domainEvents.AsReadOnly();
+        public void ClearDomainEvents() => _domainEvents.Clear();
+        public void AddEvent(ICustomNotification ev)
+        {
+            this._domainEvents.Add(ev);
+        }
+
         public User() : base()
         {
         }
 
-        private User(string username, string email, string? image, UserRoles roles)
+        private User(Guid userId, string username, string email, string? image, UserRoles roles)
         {
+            Id = userId;
             UserName = username;
             Email = email;
             Image = image;
@@ -44,12 +56,11 @@ namespace Libres.API.Features.Users.Domain
                 return Result<User>.Failure(Error.Validation("Password is required."));
             }
 
-            var user = new User(username, email, image, roles);
+            var user = new User(Guid.NewGuid(), username, email, image, roles);
             user.NormalizedUserName = username.ToUpperInvariant();
             user.NormalizedEmail = email.ToUpperInvariant();
 
-            // هنا تقدر تضيف الـ Domain Event بتاعك عادي جداً
-            // user.AddEvent(new OnUserRegistered(user)); 
+            user.AddEvent(new UserCreatedEvent(user.Id));
 
             return Result<User>.Success(user);
         }

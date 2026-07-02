@@ -1,4 +1,5 @@
 using Libres.API.Common;
+using Libres.API.Features;
 using Libres.API.Shared;
 using Microsoft.Extensions.FileProviders;
 using Scalar.AspNetCore;
@@ -14,7 +15,7 @@ builder.Services.AddApiServices();
 
 builder.Services.AddSharedInfrastructureServices(builder.Configuration);
 builder.Services.AddCookiesAuthentication();
-builder.Services.AddSharedApplicationServices();
+builder.Services.AddSharedApplicationServices(typeof(FeaturesAssemblyMarker).Assembly);
 // builder.Services.AddControllers()
 //     .AddJsonOptions(options =>
 //     {
@@ -30,6 +31,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
 
 app.UseHttpsRedirection();
 app.UseCors("LocalhostPolicy");

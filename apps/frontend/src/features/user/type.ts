@@ -1,6 +1,6 @@
 import type { ApiSchemas } from "@/schemas/api-schema";
 
-export type ResultOfUserProfile = ApiSchemas["ResultOfUserProfileDto"];
+export type ResultOfUserProfile = ApiSchemas["ResultOfUserProfileResponse"];
 
 export const UserRoles = {
   Admin: "Admin",
