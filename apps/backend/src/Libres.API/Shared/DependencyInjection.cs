@@ -75,6 +75,13 @@ namespace Libres.API.Shared
                            .AllowAnyMethod()
                            .AllowCredentials();
                  });
+                 options.AddPolicy("GlobalPolicy", policy =>
+                 {
+                     policy.WithOrigins("https://libres-smoky.vercel.app")
+                           .AllowAnyHeader()
+                           .AllowAnyMethod()
+                           .AllowCredentials();
+                 });
                  options.AddPolicy("LocalhostPolicy", policy =>
                  {
                      policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
@@ -82,6 +89,7 @@ namespace Libres.API.Shared
                                    .AllowAnyMethod()
                                    .AllowCredentials();
                  });
+
              });
 
 
