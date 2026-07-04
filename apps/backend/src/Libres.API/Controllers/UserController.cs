@@ -89,8 +89,9 @@ namespace Libres.API.Controllers
         }
 
         [HttpPut("edit")]
+        [Consumes("multipart/form-data")]
         [Authorize]
-        public async Task<IActionResult> EditProfile([FromBody] EditProfileCommand request, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> EditProfile([FromForm] EditProfileCommand request, CancellationToken cancellationToken = default)
         {
 
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;

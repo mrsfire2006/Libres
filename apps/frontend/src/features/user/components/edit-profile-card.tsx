@@ -1,6 +1,6 @@
 // components/edit-profile-card.tsx
 import { useState } from "react";
-import { Camera, Loader2, Pencil, X, Check } from "lucide-react";
+import { Camera, Loader2, Pencil, X, Check, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,40 +12,54 @@ interface EditProfileCardProps {
     image: string | null;
 }
 
-const fileToBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-
 export function EditProfileCard({ username, image }: EditProfileCardProps) {
     const { mutateAsync: editProfile, isPending } = useEditUserProfileCommand();
-    const [error, setError] = useState<string>("")
+    const [error, setError] = useState<string>("");
     const [isEditing, setIsEditing] = useState(false);
-    const [command, setCommand] = useState<EditProfileCommand>({ username, image });
 
-    const hasChanges = command.username.trim() !== username || command.image !== image;
+    const [isImageDeleted, setIsImageDeleted] = useState(false);
+    const [command, setCommand] = useState<EditProfileCommand>({ username, image: null });
+    const [preview, setPreview] = useState<string | null>(null);
+
+    const displayImage = isImageDeleted ? null : (preview ?? image);
+
+    const hasChanges =
+        command.username.trim() !== username ||
+        command.image !== null ||
+        isImageDeleted;
 
     const startEdit = () => {
-        setError("")
-        setCommand({ username, image });
+        setError("");
+        setCommand({ username, image: null });
+        setPreview(null);
+        setIsImageDeleted(false);
         setIsEditing(true);
     };
 
     const cancelEdit = () => {
-        setError("")
-
-        setCommand({ username, image });
+        setError("");
+        setCommand({ username, image: null });
+        setPreview(null);
+        setIsImageDeleted(false);
         setIsEditing(false);
     };
 
-    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        const base64 = await fileToBase64(file);
-        setCommand((prev) => ({ ...prev, image: base64 }));
+        setCommand((prev) => ({ ...prev, image: file }));
+        setPreview(URL.createObjectURL(file));
+        setIsImageDeleted(false);
+    };
+
+    const handleRemoveImage = () => {
+        if (preview) {
+            setCommand((prev) => ({ ...prev, image: null }));
+            setPreview(null);
+        } else {
+            setIsImageDeleted(true);
+            setCommand((prev) => ({ ...prev, image: null }));
+        }
     };
 
     const handleSave = async () => {
@@ -54,17 +68,20 @@ export function EditProfileCard({ username, image }: EditProfileCardProps) {
             setIsEditing(false);
             return;
         }
-        setError("")
+        setError("");
         try {
-            const result = await editProfile(command);
+            const result = await editProfile({
+                username: trimmed,
+                image: command.image,
+                deleteCurrentImage: isImageDeleted
+            });
+
             if (result.isFailure) {
                 setError(result.error?.message!);
+                return;
             }
-        } catch {
-        }
-        finally {
-
             setIsEditing(false);
+        } catch {
         }
     };
 
@@ -81,11 +98,11 @@ export function EditProfileCard({ username, image }: EditProfileCardProps) {
 
             {isEditing ? (
                 <div className="flex flex-col gap-4">
-                    {/* الصورة */}
+                    {/* قسم الصورة الشخصية */}
                     <div className="flex items-center gap-4">
                         <label className="group relative w-16 h-16 rounded-full bg-accent flex items-center justify-center text-lg font-bold overflow-hidden border shrink-0 cursor-pointer">
-                            {command.image ? (
-                                <img src={command.image} alt={command.username} className="w-full h-full object-cover" />
+                            {displayImage ? (
+                                <img src={displayImage} alt={command.username} className="w-full h-full object-cover" />
                             ) : (
                                 <div className="w-full h-full rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-700 dark:text-blue-300 font-medium">
                                     {command.username?.slice(0, 2).toUpperCase()}
@@ -102,7 +119,24 @@ export function EditProfileCard({ username, image }: EditProfileCardProps) {
                                 disabled={isPending}
                             />
                         </label>
-                        <p className="text-xs text-muted-foreground">اضغط على الصورة لتغييرها</p>
+
+                        <div className="flex flex-col gap-1">
+                            <p className="text-xs text-muted-foreground">اضغط على الصورة لتغييرها</p>
+                            {/* يظهر زر الحذف فقط إذا كانت هناك صورة معروضة حالياً */}
+                            {displayImage && (
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={handleRemoveImage}
+                                    className="h-7 px-2 text-xs w-fit flex items-center gap-1"
+                                    disabled={isPending}
+                                >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                    حذف الصورة
+                                </Button>
+                            )}
+                        </div>
                     </div>
 
                     {/* اسم المستخدم */}
@@ -117,16 +151,16 @@ export function EditProfileCard({ username, image }: EditProfileCardProps) {
                         />
                     </div>
 
-
+                    {error && <p className="text-sm text-destructive">{error}</p>}
 
                     <div className="flex items-center gap-2">
                         <Button onClick={handleSave} disabled={isPending || !hasChanges} size="sm">
                             {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4 me-1" />}
-                            {!isPending && "Save"}
+                            {!isPending && "حفظ"}
                         </Button>
                         <Button variant="outline" size="sm" onClick={cancelEdit} disabled={isPending}>
                             <X className="w-4 h-4 me-1" />
-                            Cancel
+                            إلغاء
                         </Button>
                     </div>
                 </div>
@@ -143,9 +177,6 @@ export function EditProfileCard({ username, image }: EditProfileCardProps) {
                     </div>
                     <p className="text-lg font-semibold text-foreground">{username}</p>
                 </div>
-            )}
-            {error && (
-                <p className="pt-3 text-sm text-destructive">{error}</p>
             )}
         </div>
     );

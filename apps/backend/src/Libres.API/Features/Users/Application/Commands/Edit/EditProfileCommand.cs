@@ -10,10 +10,11 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Libres.API.Features.Users.Application.Commands.Edit
 {
-    public record EditProfileCommand(string username, string? image) : ICustomRequest<Result<string>>
+    public record EditProfileCommand(string username, bool deleteCurrentImage, IFormFile? image) : ICustomRequest<Result<string>>
     {
         [JsonIgnore]
         [BindNever]
+
         public Guid UserId { get; set; }
     };
 

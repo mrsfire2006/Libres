@@ -1,6 +1,7 @@
 import type { EditProfileCommand, ResultOfUserProfile } from "./type";
 import { clientFetch } from "@/lib/client/api-client";
 import { USERAPIROUTES } from "./paths";
+import type { Result } from "@/schemas/api-schema";
 
 export const UserService = {
   getUserProfile: async (): Promise<ResultOfUserProfile> => {
@@ -13,14 +14,28 @@ export const UserService = {
 
     return result;
   },
+
   editProfile: async (
     editProfile: EditProfileCommand,
-  ): Promise<ResultOfUserProfile> => {
-    const result: ResultOfUserProfile = await clientFetch(
+  ): Promise<Result<string>> => {
+    const formData = new FormData();
+    formData.append("username", editProfile.username);
+
+    if (editProfile.image) {
+      formData.append("image", editProfile.image);
+    }
+
+    if (editProfile.deleteCurrentImage !== undefined) {
+      formData.append(
+        "deleteCurrentImage",
+        String(editProfile.deleteCurrentImage),
+      );
+    }
+    const result: Result<string> = await clientFetch(
       `${USERAPIROUTES.USEREDITPROFILE}`,
       {
         method: "PUT",
-        body: JSON.stringify(editProfile),
+        body: formData,
       },
     );
     return result;

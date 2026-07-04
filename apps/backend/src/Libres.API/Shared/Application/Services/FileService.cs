@@ -36,7 +36,6 @@ namespace Libres.API.Shared.Application.Services
 
         public string GetAbsoluteUrl(string fileName)
         {
-            // استخدام الرابط الديناميكي لإنشاء رابط الملف الكامل
             return $"{GetBaseUrl()}/uploads/{fileName}";
         }
     }

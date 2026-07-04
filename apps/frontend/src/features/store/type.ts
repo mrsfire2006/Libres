@@ -11,5 +11,8 @@ export type ResultOfListBookResponse =
   ApiSchemas["ResultOfIEnumerableOfBookResponse"];
 
 export type BookResponse = ResultOfBookResponse["value"];
+
+
+
 export type BookRequestQuery =
   paths["/api/book/books"]["get"]["parameters"]["query"];

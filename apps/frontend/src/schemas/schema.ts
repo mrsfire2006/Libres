@@ -575,9 +575,13 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["EditProfileCommand"];
-                    "text/json": components["schemas"]["EditProfileCommand"];
-                    "application/*+json": components["schemas"]["EditProfileCommand"];
+                    "multipart/form-data": {
+                        username?: string;
+                        deleteCurrentImage?: boolean;
+                        image?: components["schemas"]["IFormFile"];
+                        /** Format: uuid */
+                        UserId?: string;
+                    };
                 };
             };
             responses: {
@@ -646,10 +650,6 @@ export interface components {
             categoryId: string;
             newName: string;
             newDescription: null | string;
-        };
-        EditProfileCommand: {
-            username: string;
-            image: null | string;
         };
         Error: {
             message: string;

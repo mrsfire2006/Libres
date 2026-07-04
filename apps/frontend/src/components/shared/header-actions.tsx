@@ -90,7 +90,7 @@ export default function HeaderActions() {
                         >
                             {/* Avatar */}
                             <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-700 dark:text-blue-300 text-[13px] font-medium shrink-0">
-                                {user?.username.slice(0, 2).toUpperCase()}
+                                {user?.image ? <img src={user.image} alt="" /> : user?.username.slice(0, 2).toUpperCase()}
                             </div>
 
                             {/* Name + Role */}

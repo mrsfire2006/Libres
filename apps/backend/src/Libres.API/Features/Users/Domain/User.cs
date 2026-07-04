@@ -79,7 +79,7 @@ namespace Libres.API.Features.Users.Domain
 
             if (UserName == newUsername)
             {
-                return Result<User>.Failure(Error.Validation("Username is already use"));
+                return Result<User>.Success(this);
             }
 
             UserName = newUsername;
@@ -88,6 +88,11 @@ namespace Libres.API.Features.Users.Domain
 
 
             return Result<User>.Success(this);
+        }
+
+        public void UpdateImage(string? image)
+        {
+            this.Image = image;
         }
     }
 }
