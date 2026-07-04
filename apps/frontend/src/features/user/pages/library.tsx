@@ -4,7 +4,7 @@ import { useGetUserProfileQuery } from "../user.hook";
 export default function LibraryPage() {
 
 
-    const { data: result, isLoading, isError, error } = useGetUserProfileQuery;
+    const { data: result, isLoading, isError, error } = useGetUserProfileQuery();
 
 
     if (isLoading) {
