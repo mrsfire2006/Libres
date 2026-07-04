@@ -68,5 +68,26 @@ namespace Libres.API.Features.Users.Domain
 
         public void Deactivate() => this.Active = false;
         public void Activate() => this.Active = true;
+
+
+        public Result<User> UpdateUsername(string newUsername)
+        {
+            if (string.IsNullOrWhiteSpace(newUsername))
+            {
+                return Result<User>.Failure(Error.Validation("Username cannot be empty."));
+            }
+
+            if (UserName == newUsername)
+            {
+                return Result<User>.Failure(Error.Validation("Username is already use"));
+            }
+
+            UserName = newUsername;
+            NormalizedUserName = newUsername.ToUpperInvariant();
+
+
+
+            return Result<User>.Success(this);
+        }
     }
 }

@@ -2,24 +2,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Libres.API.Common;
 using Libres.API.Data.Persistence;
 using Libres.API.Features.Books.Application.Common;
 using Libres.API.Features.Books.Domain;
 using Libres.API.Shared.Application.CustomError;
 using Libres.API.Shared.Application.Mediator;
+using Libres.API.Shared.Application.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Libres.API.Features.Books.Application.Queries.Books
 {
     public class BooksRequestQueryHandler : ICustomRequestHandler<BooksRequestQuery, Result<IEnumerable<BookResponse>>>
     {
         private readonly AppDbContext _context;
-        private readonly string _baseUrl;
-
-        public BooksRequestQueryHandler(AppDbContext context, IConfiguration config)
+        private readonly FileService _fileService;
+        public BooksRequestQueryHandler(AppDbContext context, FileService fileService)
         {
             _context = context;
-            _baseUrl = config["Storage:BaseUrl"]!;
+            _fileService = fileService;
+
 
         }
         public async Task<Result<IEnumerable<BookResponse>>> HandleAsync(BooksRequestQuery request, CancellationToken cancellationToken)
@@ -55,8 +58,8 @@ namespace Libres.API.Features.Books.Application.Queries.Books
                         x.book.BookStatus.ToString(),
                         x.book.Description,
                         x.book.CreatedAt,
-                        x.book.CoverImagePath != null ? $"{_baseUrl}/{x.book.CoverImagePath}" : null,
-                        x.book.FilePath != null ? $"{_baseUrl}/{x.book.FilePath}" : null
+                        x.book.CoverImagePath != null ? $"{_fileService.GetBaseUrl()}/{x.book.CoverImagePath}" : null,
+                        x.book.FilePath != null ? $"{_fileService.GetBaseUrl()}/{x.book.FilePath}" : null
                     ))
                     .ToListAsync(cancellationToken);
 

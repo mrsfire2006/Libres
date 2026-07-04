@@ -8,8 +8,10 @@ using Libres.API.Data.Persistence;
 using Libres.API.Features.Users.Domain;
 using Libres.API.Shared.Application.Factories;
 using Libres.API.Shared.Application.Mediator;
+using Libres.API.Shared.Application.Services;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Libres.API.Shared
@@ -20,7 +22,7 @@ namespace Libres.API.Shared
         {
 
             services.AddScoped<CustomMediator>();
-
+            services.AddScoped<FileService>();
             foreach (var assembly in assemblies)
             {
                 RegisterHandlers(services, assembly, typeof(ICustomRequestHandler<,>));

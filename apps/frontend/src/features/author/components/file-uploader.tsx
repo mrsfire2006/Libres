@@ -8,7 +8,7 @@ import { DollarSign, UploadCloud, ImageIcon, AlertCircle, CheckCircle2 } from 'l
 import type { CreateBookRequest, UploadStatus } from '../type';
 import { useAuthor } from '../author.hook';
 import type { ResultAllCategories } from '@/features/store/type';
-import { useUser } from '@/features/user/user.hook';
+import { useGetUserProfileQuery } from '@/features/user/user.hook';
 
 interface FileUploaderProps {
     categories?: ResultAllCategories["value"];
@@ -18,7 +18,7 @@ export function FileUploader({ categories = [] }: FileUploaderProps) {
     const [book, setBook] = useState<Partial<CreateBookRequest>>({});
     const [status, setStatus] = useState<UploadStatus>("idle");
     const [error, setError] = useState("");
-    const { data: user } = useUser().getUserProfileQuery;
+    const { data: user } = useGetUserProfileQuery();
 
     const { mutateAsync: upload } = useAuthor().uploadBook;
 

@@ -1,10 +1,10 @@
 import LoadingCircle from "@/components/shared/loading-circle";
-import { useUser } from "../user.hook"
+import { useGetUserProfileQuery } from "../user.hook";
 
 export default function LibraryPage() {
 
 
-    const { data: result, isLoading, isError, error } = useUser().getUserProfileQuery;
+    const { data: result, isLoading, isError, error } = useGetUserProfileQuery;
 
 
     if (isLoading) {

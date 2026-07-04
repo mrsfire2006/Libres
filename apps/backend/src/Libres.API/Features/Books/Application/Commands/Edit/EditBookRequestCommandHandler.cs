@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Libres.API.Common;
 using Libres.API.Data.Persistence;
 using Libres.API.Features.Books.Application.Common;
 using Libres.API.Shared.Application.CustomError;
 using Libres.API.Shared.Application.Mediator;
+using Libres.API.Shared.Application.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Libres.API.Features.Books.Application.Commands.Edit
 {
@@ -14,12 +17,14 @@ namespace Libres.API.Features.Books.Application.Commands.Edit
     {
 
         private readonly AppDbContext _context;
-        private readonly string _baseUrl;
+        private readonly FileService _fileService;
 
-        public EditBookRequestCommandHandler(AppDbContext context, IConfiguration config)
+
+        public EditBookRequestCommandHandler(AppDbContext context, FileService fileService)
         {
             _context = context;
-            _baseUrl = config["Storage:BaseUrl"]!;
+            _fileService = fileService;
+
 
         }
         public async Task<Result<BookResponse>> HandleAsync(EditBookRequestCommand request, CancellationToken cancellationToken)
@@ -53,8 +58,8 @@ namespace Libres.API.Features.Books.Application.Commands.Edit
                  book.BookStatus.ToString(),
                  book.Description,
                  book.CreatedAt,
-                 book.CoverImagePath != null ? $"{_baseUrl}/{book.CoverImagePath}" : null,
-                 book.FilePath != null ? $"{_baseUrl}/{book.FilePath}" : null
+                 book.CoverImagePath != null ? $"{_fileService.GetBaseUrl()}/{book.CoverImagePath}" : null,
+                 book.FilePath != null ? $"{_fileService.GetBaseUrl()}/{book.FilePath}" : null
             )).FirstOrDefaultAsync(cancellationToken);
 
             return Result<BookResponse>.Success(bookResponse);

@@ -13,14 +13,14 @@ import {
 interface ProfileAvatarProps {
     username: string;
     image?: string | null;
+    editable?: boolean;
 }
 
-export function ProfileAvatar({ username, image }: ProfileAvatarProps) {
+export function ProfileAvatar({ username, image, editable = true }: ProfileAvatarProps) {
     const [open, setOpen] = useState(false);
     const [preview, setPreview] = useState<string | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    // const { updateAvatarMutation } = useUserMutations();
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -31,7 +31,6 @@ export function ProfileAvatar({ username, image }: ProfileAvatarProps) {
 
     const handleSave = async () => {
         if (!selectedFile) return;
-        // await updateAvatarMutation.mutateAsync(selectedFile);
         setOpen(false);
         setPreview(null);
         setSelectedFile(null);
@@ -46,6 +45,20 @@ export function ProfileAvatar({ username, image }: ProfileAvatarProps) {
     };
 
     const currentImage = preview ?? image;
+
+    if (!editable) {
+        return (
+            <div className="w-24 h-24 rounded-full bg-accent flex items-center justify-center text-3xl font-bold overflow-hidden border shrink-0">
+                {image ? (
+                    <img src={image} alt={username} className="w-full h-full object-cover" />
+                ) : (
+                    <div className="w-full h-full rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-700 dark:text-blue-300 text-[30px] font-medium">
+                        {username?.slice(0, 2).toUpperCase()}
+                    </div>
+                )}
+            </div>
+        );
+    }
 
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -80,8 +93,8 @@ export function ProfileAvatar({ username, image }: ProfileAvatarProps) {
                         ) : (
                             <div className="w-15 h-15 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-700 dark:text-blue-300 text-[30px] font-medium shrink-0">
                                 {username?.slice(0, 2).toUpperCase()}
-                            </div>)
-                            }
+                            </div>
+                        )}
                     </div>
 
                     <input
@@ -92,25 +105,13 @@ export function ProfileAvatar({ username, image }: ProfileAvatarProps) {
                         onChange={handleFileSelect}
                     />
                     <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                        اختيار صورة
+                        Choose Image
                     </Button>
-
-                    {/* {updateAvatarMutation.isError && (
-                        <p className="text-sm text-destructive">تعذر رفع الصورة، حاول مرة أخرى.</p>
-                    )} */}
                 </div>
 
                 <DialogFooter>
-                    <Button
-                        type="button"
-                        onClick={handleSave}
-                    // disabled={!selectedFile || updateAvatarMutation.isPending}
-                    >
-                        {/* {updateAvatarMutation.isPending ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                            "حفظ الصورة"
-                        )} */}
+                    <Button type="button" onClick={handleSave} disabled={!selectedFile}>
+                         Save Image
                     </Button>
                 </DialogFooter>
             </DialogContent>

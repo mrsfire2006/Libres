@@ -1,16 +1,18 @@
 import LoadingCircle from "@/components/shared/loading-circle";
-import { useUser } from "../user.hook";
 import { ProfileAvatar } from "../components/profile-avatar";
-import { EditUsernameCard } from "../components/edit-username-card";
 import { ChangePasswordCard } from "../components/changepassword-card";
-import { Wallet } from "lucide-react";
+import { Wallet, User, Lock } from "lucide-react";
+import { useGetUserProfileQuery } from "../user.hook";
+import { useState } from "react";
+import { EditProfileCard } from "../components/edit-profile-card";
 
+
+type TypeState = "profile" | "security"
 export default function ProfilePage() {
-    const { data: result, isLoading, isError, error } = useUser().getUserProfileQuery;
+    const { data: result, isLoading, isError, error } = useGetUserProfileQuery();
+    const [activeTab, setActiveTab] = useState<TypeState>("profile");
 
-    if (isLoading) {
-        return <LoadingCircle />;
-    }
+    if (isLoading) return <LoadingCircle />;
 
     if (isError) {
         return (
@@ -21,9 +23,7 @@ export default function ProfilePage() {
     }
 
     const user = result?.value;
-    if (!user) {
-        return <div className="text-center p-8">لم يتم العثور على بيانات المستخدم.</div>;
-    }
+    if (!user) return <div className="text-center p-8">لم يتم العثور على بيانات المستخدم.</div>;
 
     const formattedBalance = new Intl.NumberFormat("en-US", {
         minimumFractionDigits: 2,
@@ -34,9 +34,8 @@ export default function ProfilePage() {
         <main className="w-full max-w-2xl mx-auto p-6 my-8">
             <h1 className="text-2xl font-bold mb-6 text-foreground border-b pb-2">إعدادات الحساب</h1>
 
-            {/* رأس الملف الشخصي: الصورة + الاسم + الرتبة */}
             <div className="bg-card border rounded-xl p-6 flex flex-col md:flex-row items-center gap-6 mb-6">
-                <ProfileAvatar username={user.username} image={user.image} />
+                <ProfileAvatar username={user.username} image={user.image} editable={false} />
 
                 <div className="flex-1 space-y-1 text-center md:text-right w-full">
                     <h2 className="text-xl font-semibold text-foreground">{user.username}</h2>
@@ -60,10 +59,31 @@ export default function ProfilePage() {
                 </div>
             </div>
 
-            {/* تعديل البيانات */}
-            <div className="flex flex-col gap-4">
-                <EditUsernameCard username={user.username} />
-                <ChangePasswordCard />
+            {/* تبويب يدوي */}
+            <div className="flex gap-2 mb-4 border-b">
+                <button
+                    type="button"
+                    onClick={() => setActiveTab("profile")}
+                    className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${activeTab === "profile" ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
+                        }`}
+                >
+                    <User className="w-4 h-4" />
+                    البيانات الشخصية
+                </button>
+                <button
+                    type="button"
+                    onClick={() => setActiveTab("security")}
+                    className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${activeTab === "security" ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
+                        }`}
+                >
+                    <Lock className="w-4 h-4" />
+                    الأمان
+                </button>
+            </div>
+
+            <div>
+                {activeTab === "profile" && <EditProfileCard username={user.username} image={user.image} />}
+                {activeTab === "security" && <ChangePasswordCard />}
             </div>
         </main>
     );

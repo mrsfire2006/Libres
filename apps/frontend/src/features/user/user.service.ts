@@ -1,4 +1,4 @@
-import type { ResultOfUserProfile } from "./type";
+import type { EditProfileCommand, ResultOfUserProfile } from "./type";
 import { clientFetch } from "@/lib/client/api-client";
 import { USERAPIROUTES } from "./paths";
 
@@ -11,6 +11,18 @@ export const UserService = {
       },
     );
 
+    return result;
+  },
+  editProfile: async (
+    editProfile: EditProfileCommand,
+  ): Promise<ResultOfUserProfile> => {
+    const result: ResultOfUserProfile = await clientFetch(
+      `${USERAPIROUTES.USEREDITPROFILE}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(editProfile),
+      },
+    );
     return result;
   },
 };

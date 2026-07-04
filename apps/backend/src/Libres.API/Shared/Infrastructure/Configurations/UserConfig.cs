@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Libres.API.Features.Books.Domain.Entities;
 using Libres.API.Features.Users;
 using Libres.API.Features.Users.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,7 @@ namespace Libres.API.Shared.Infrastructure.Configurations
             builder.Ignore(u => u.LockoutEnabled);
             builder.Ignore(u => u.LockoutEnd);
             builder.Ignore(u => u.PhoneNumberConfirmed);
+
 
         }
     }

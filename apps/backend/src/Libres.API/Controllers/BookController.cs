@@ -1,6 +1,7 @@
 
 using Libres.API.Common;
 using Libres.API.Features.Books.Application.Commands.Create;
+using Libres.API.Features.Books.Application.Commands.CreateReview;
 using Libres.API.Features.Books.Application.Commands.Delete;
 using Libres.API.Features.Books.Application.Commands.Edit;
 using Libres.API.Features.Books.Application.Commands.UpdateStatus;
@@ -34,7 +35,7 @@ namespace Libres.API.Controllers
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             request.UserId = Guid.Parse(userId!);
-            
+
             var result = await _mediator.SendAsync(request, cancellationToken);
 
             return HandleResult(result);
@@ -59,7 +60,7 @@ namespace Libres.API.Controllers
         }
 
 
-        [HttpPost("status")]
+        [HttpPut("status")]
         [Authorize(Roles = $"{nameof(UserRoles.Admin)},{nameof(UserRoles.SuperAdmin)}")]
         [ProducesResponseType(typeof(Result<BookResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> UpdateStatus([FromForm] UpdateStatusRequestCommand request, CancellationToken cancellationToken)
@@ -72,6 +73,21 @@ namespace Libres.API.Controllers
         [ProducesResponseType(typeof(Result<IEnumerable<BookResponse>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> BooksByCategoryId([FromQuery] BooksRequestQuery request, CancellationToken cancellationToken)
         {
+            var result = await _mediator.SendAsync(request, cancellationToken);
+            return HandleResult(result);
+        }
+
+
+
+
+        [HttpPost("review")]
+        [Authorize]
+        [ProducesResponseType(typeof(Result<ReviewResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> AddReview([FromBody] CreateReviewRequestCommand request, CancellationToken cancellationToken)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            request.UserId = Guid.Parse(userId!);
+            
             var result = await _mediator.SendAsync(request, cancellationToken);
             return HandleResult(result);
         }

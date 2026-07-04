@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Libres.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260701232830_init")]
+    [Migration("20260703080716_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -69,6 +69,33 @@ namespace Libres.API.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("Libres.API.Features.Books.Domain.Entities.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BookId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Review");
                 });
 
             modelBuilder.Entity("Libres.API.Features.Categories.Domain.Category", b =>
@@ -343,6 +370,20 @@ namespace Libres.API.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Libres.API.Features.Books.Domain.Entities.Review", b =>
+                {
+                    b.HasOne("Libres.API.Features.Books.Domain.Book", null)
+                        .WithMany("Reviews")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Libres.API.Features.Users.Domain.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+                });
+
             modelBuilder.Entity("Libres.API.Features.Wallet.Domain.Wallet", b =>
                 {
                     b.HasOne("Libres.API.Features.Users.Domain.User", null)
@@ -401,6 +442,11 @@ namespace Libres.API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Libres.API.Features.Books.Domain.Book", b =>
+                {
+                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

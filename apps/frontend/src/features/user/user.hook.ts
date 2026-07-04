@@ -1,14 +1,27 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserService } from "./user.service";
 import { QUERIESKEY } from "@/constants";
-
-export const useUser = () => {
-
-  const getUserProfileQuery = useQuery({
+import type { EditProfileCommand } from "./type";
+export const useGetUserProfileQuery = () => {
+  return useQuery({
     queryKey: [QUERIESKEY.USER_PROFILE_KEY],
     queryFn: () => UserService.getUserProfile(),
     retry: false,
   });
+};
 
-  return { getUserProfileQuery };
+export const useEditUserProfileCommand = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (editProfile: EditProfileCommand) =>
+      UserService.editProfile(editProfile),
+    onSuccess: (data) => {
+      if (data.isSuccess) {
+        queryClient.invalidateQueries({
+          queryKey: [QUERIESKEY.USER_PROFILE_KEY],
+        });
+      }
+    },
+    retry: false,
+  });
 };

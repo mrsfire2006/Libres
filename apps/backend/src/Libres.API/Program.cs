@@ -9,8 +9,9 @@ using Scalar.AspNetCore;
 
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddApiServices();
+builder.Services.Configure<StorageOptions>(builder.Configuration.GetSection("Storage"));
 
 
 builder.Services.AddSharedInfrastructureServices(builder.Configuration);
@@ -30,7 +31,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
-    // app.UseCors("LocalhostPolicy");
+    app.UseCors("LocalhostPolicy");
 }
 
 

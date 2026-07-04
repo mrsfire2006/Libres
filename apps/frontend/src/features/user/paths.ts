@@ -1,5 +1,6 @@
 export const USERAPIROUTES = {
   USERPROFILE: "user/me",
+  USEREDITPROFILE: "user/edit",
 };
 
 export const USERROUTES = {

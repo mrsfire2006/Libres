@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Libres.API.Features.Books.Domain.Entities;
 using Libres.API.Features.Users.Domain;
 using Libres.API.Shared.Application.CustomError;
 using Libres.API.Shared.Domain;
@@ -22,8 +23,9 @@ namespace Libres.API.Features.Books.Domain
         public string? CoverImagePath { get; private set; }
         public string? FilePath { get; private set; }
 
+        private List<Review> _reviews = new List<Review>();
+        public IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
 
-        // public Category? Category { get; private set; }
         public Guid? CategoryId { get; private set; }
 
         public BookStatus BookStatus { get; private set; } = BookStatus.Pending;
@@ -80,6 +82,18 @@ namespace Libres.API.Features.Books.Domain
             this.Description = newDescription;
 
             return Result<bool>.Success(true);
+        }
+
+
+        public void AddReview(Review review)
+        {
+            this._reviews.Add(review);
+
+        }
+        public void RemoveReview(Review review)
+        {
+            this._reviews.Remove(review);
+
         }
     }
 }

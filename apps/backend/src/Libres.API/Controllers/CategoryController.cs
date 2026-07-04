@@ -34,7 +34,7 @@ namespace Libres.API.Controllers
             return HandleResult(result);
         }
 
-        [HttpPost("edit")]
+        [HttpPut("edit")]
         [Authorize(Roles = $"{nameof(UserRoles.Admin)},{nameof(UserRoles.SuperAdmin)}")]
         [ProducesResponseType(typeof(Result<string>), StatusCodes.Status200OK)]
         public async Task<IActionResult> EditCategory([FromBody] EditCategoryRequestCommand request, CancellationToken cancellationToken = default)

@@ -238,6 +238,33 @@ namespace Libres.API.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Review",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: true),
+                    BookId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Comment = table.Column<string>(type: "text", nullable: false),
+                    Rating = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Review", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Review_Books_BookId",
+                        column: x => x.BookId,
+                        principalTable: "Books",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Review_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Books_CategoryId",
                 table: "Books",
@@ -246,6 +273,16 @@ namespace Libres.API.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Books_UserId",
                 table: "Books",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Review_BookId",
+                table: "Review",
+                column: "BookId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Review_UserId",
+                table: "Review",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -296,10 +333,10 @@ namespace Libres.API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Books");
+                name: "DataProtectionKeys");
 
             migrationBuilder.DropTable(
-                name: "DataProtectionKeys");
+                name: "Review");
 
             migrationBuilder.DropTable(
                 name: "RoleClaims");
@@ -320,10 +357,13 @@ namespace Libres.API.Migrations
                 name: "Wallets");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "Books");
 
             migrationBuilder.DropTable(
                 name: "Roles");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Users");

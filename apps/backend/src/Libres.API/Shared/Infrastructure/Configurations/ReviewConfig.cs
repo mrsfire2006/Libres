@@ -10,21 +10,24 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Libres.API.Shared.Infrastructure.Configurations
 {
-    public class BookConfig : IEntityTypeConfiguration<Book>
+    public class ReviewConfig : IEntityTypeConfiguration<Review>
     {
-        public void Configure(EntityTypeBuilder<Book> builder)
+        public void Configure(EntityTypeBuilder<Review> builder)
         {
             builder.HasKey(x => x.Id);
+            builder.Property(x => x.Id).ValueGeneratedNever();
 
+
+
+            builder.HasOne<Book>()
+                       .WithMany(b => b.Reviews)
+                       .HasForeignKey(r => r.BookId)
+                       .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne<User>()
             .WithMany()
             .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-
-
-
+            .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

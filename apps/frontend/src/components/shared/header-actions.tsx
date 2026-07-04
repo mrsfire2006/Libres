@@ -4,13 +4,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { ROUTES } from "@/constants";
 import { ToggleTheme } from "./toggle-theme";
-import { useUser } from "@/features/user/user.hook";
 import { useAuth } from "@/features/auth/auth-hook";
 import { UserRoles } from "@/features/user/type";
 import { AUTHROUTES } from "@/features/auth/paths";
 import { HOMEROUTES } from "@/features/home/paths";
 import { STOREROUTES } from "@/features/store/paths";
 import { USERROUTES } from "@/features/user/paths";
+import { useGetUserProfileQuery } from "@/features/user/user.hook";
 
 
 
@@ -24,7 +24,7 @@ const navLinks = [
 export default function HeaderActions() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { mutateAsync: logout } = useAuth().logoutMutation;
-    const { data, isLoading } = useUser().getUserProfileQuery;
+    const { data, isLoading } = useGetUserProfileQuery();
     const user = data?.value;
     const isAuthenticated = !!data?.value
     const isAuthor = user?.roles.includes(UserRoles.Author);

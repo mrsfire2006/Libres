@@ -22,20 +22,16 @@ namespace Libres.API.Features.Users.Application.Queries.Profile
         public async Task<Result<UserProfileResponse>> HandleAsync(ProfileRequestQuery request, CancellationToken cancellationToken)
         {
             var user = await _context.Users
-                .Where(x => x.Id == request.UserId)
-                .GroupJoin(_context.Wallets,
-                    u => u.Id,
-                    w => w.UserId,
-                    (u, wallets) => new { u, wallets })
-                .SelectMany(x => x.wallets.DefaultIfEmpty(), (x, wallet) => new UserProfileResponse(
-                    x.u.Id,
-                    x.u.UserName!,
-                    x.u.Email!,
-                    x.u.Image,
-                    x.u.Roles.ToString(),
-                    wallet != null ? wallet.Balance : 0
-                ))
-                .FirstOrDefaultAsync();
+                        .Where(x => x.Id == request.UserId)
+                        .Select(u => new UserProfileResponse(
+                            u.Id,
+                            u.UserName!,
+                            u.Email!,
+                            u.Image,
+                            u.Roles.ToString(),
+                            _context.Wallets.Where(w => w.UserId == u.Id).Select(w => w.Balance).FirstOrDefault() // Left Join ذكي وتلقائي
+                        ))
+                        .FirstOrDefaultAsync(cancellationToken);
 
             if (user == null)
             {

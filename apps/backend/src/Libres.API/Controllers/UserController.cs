@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Libres.API.Common;
+using Libres.API.Features.Users.Application.Commands.Edit;
 using Libres.API.Features.Users.Application.Commands.Login;
 using Libres.API.Features.Users.Application.Commands.Logout;
 using Libres.API.Features.Users.Application.Commands.Register;
@@ -86,5 +87,23 @@ namespace Libres.API.Controllers
 
             return HandleResult(result);
         }
+
+        [HttpPut("edit")]
+        [Authorize]
+        public async Task<IActionResult> EditProfile([FromBody] EditProfileCommand request, CancellationToken cancellationToken = default)
+        {
+
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (!Guid.TryParse(userId, out Guid UserId))
+            {
+                return HandleResult(Result<string>.Failure(Error.NotFound("User not found")));
+
+            }
+            request.UserId = UserId;
+            var result = await _mediator.SendAsync(request, cancellationToken);
+            return HandleResult(result);
+        }
+
     }
 }

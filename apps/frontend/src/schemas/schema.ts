@@ -25,14 +25,14 @@ export interface paths {
                     "multipart/form-data": {
                         Title?: string;
                         /** Format: uuid */
-                        UserId?: string;
-                        /** Format: uuid */
                         CategoryId?: string;
                         Description?: string;
                         /** Format: double */
                         Price?: number | string;
                         CoverImage?: components["schemas"]["IFormFile"];
                         File?: components["schemas"]["IFormFile"];
+                        /** Format: uuid */
+                        UserId?: string;
                     };
                 };
             };
@@ -154,8 +154,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put?: never;
-        post: {
+        put: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -185,6 +184,7 @@ export interface paths {
                 };
             };
         };
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -226,6 +226,49 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/book/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateReviewRequestCommand"];
+                    "text/json": components["schemas"]["CreateReviewRequestCommand"];
+                    "application/*+json": components["schemas"]["CreateReviewRequestCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ResultOfReviewResponse"];
+                        "application/json": components["schemas"]["ResultOfReviewResponse"];
+                        "text/json": components["schemas"]["ResultOfReviewResponse"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -277,8 +320,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
-        put?: never;
-        post: {
+        put: {
             parameters: {
                 query?: never;
                 header?: never;
@@ -306,6 +348,7 @@ export interface paths {
                 };
             };
         };
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -515,6 +558,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/user/edit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["EditProfileCommand"];
+                    "text/json": components["schemas"]["EditProfileCommand"];
+                    "application/*+json": components["schemas"]["EditProfileCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -550,10 +632,24 @@ export interface components {
             name: string;
             description?: null | string;
         };
+        CreateReviewRequestCommand: {
+            /** Format: uuid */
+            bookId: string;
+            comment: string;
+            /**
+             * Format: int32
+             * @default 0
+             */
+            rating: number | string;
+        };
         EditCategoryRequestCommand: {
             categoryId: string;
             newName: string;
             newDescription: null | string;
+        };
+        EditProfileCommand: {
+            username: string;
+            image: null | string;
         };
         Error: {
             message: string;
@@ -597,6 +693,12 @@ export interface components {
             value?: null | components["schemas"]["CategoryResponse"][];
             error?: components["schemas"]["Error"];
         };
+        ResultOfReviewResponse: {
+            isSuccess?: boolean;
+            isFailure?: boolean;
+            value?: components["schemas"]["ReviewResponse"];
+            error?: components["schemas"]["Error"];
+        };
         ResultOfSigninResponse: {
             isSuccess?: boolean;
             isFailure?: boolean;
@@ -614,6 +716,13 @@ export interface components {
             isFailure?: boolean;
             value?: components["schemas"]["UserProfileResponse"];
             error?: components["schemas"]["Error"];
+        };
+        ReviewResponse: {
+            /** Format: uuid */
+            reviewId: string;
+            comment: string;
+            /** Format: int32 */
+            rating: number | string;
         };
         SigninResponse: {
             /** Format: uuid */
