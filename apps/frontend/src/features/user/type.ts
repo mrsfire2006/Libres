@@ -13,6 +13,9 @@ export type EditProfileCommand = Omit<
   username: string;
   image: File | null;
 };
+export type ResultOfString = ApiSchemas["ResultOfstring"]
+
+export type UpdatePasswordCommand = ApiSchemas["UpdatePasswordRequestCommand"]
 
 export const UserRoles = {
   Admin: "Admin",

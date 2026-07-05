@@ -12,13 +12,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Libres.API.Features.Users.Application.Commands.Edit
 {
-    public class EditProfileCommandHandler : ICustomRequestHandler<EditProfileCommand, Result<string>>
+    public class EditProfileRequestCommandHandler : ICustomRequestHandler<EditProfileRequestCommand, Result<string>>
     {
         private readonly AppDbContext _context;
         private readonly UserManager<User> _usermanager;
         private readonly SignInManager<User> _signInManager;
 
-        public EditProfileCommandHandler(
+        public EditProfileRequestCommandHandler(
             AppDbContext context,
             UserManager<User> usermanager,
             SignInManager<User> signInManager)
@@ -28,7 +28,7 @@ namespace Libres.API.Features.Users.Application.Commands.Edit
             _signInManager = signInManager;
         }
 
-        public async Task<Result<string>> HandleAsync(EditProfileCommand request, CancellationToken cancellationToken)
+        public async Task<Result<string>> HandleAsync(EditProfileRequestCommand request, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(request.username))
             {
@@ -81,7 +81,6 @@ namespace Libres.API.Features.Users.Application.Commands.Edit
 
                 await transaction.CommitAsync(cancellationToken);
 
-                // حذف الملف القديم من السيرفر بعد نجاح العملية في قاعدة البيانات
                 if (shouldDeleteOldImageFile)
                 {
                     DeleteFileIfExists(oldImagePath);

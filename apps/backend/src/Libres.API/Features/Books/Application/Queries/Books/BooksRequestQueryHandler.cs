@@ -14,7 +14,7 @@ using Microsoft.Extensions.Options;
 
 namespace Libres.API.Features.Books.Application.Queries.Books
 {
-    public class BooksRequestQueryHandler : ICustomRequestHandler<BooksRequestQuery, Result<IEnumerable<BookResponse>>>
+    public class BooksRequestQueryHandler : ICustomRequestHandler<BooksRequestQuery, Result<IEnumerable<BookSummaryResponse>>>
     {
         private readonly AppDbContext _context;
         private readonly FileService _fileService;
@@ -25,7 +25,7 @@ namespace Libres.API.Features.Books.Application.Queries.Books
 
 
         }
-        public async Task<Result<IEnumerable<BookResponse>>> HandleAsync(BooksRequestQuery request, CancellationToken cancellationToken)
+        public async Task<Result<IEnumerable<BookSummaryResponse>>> HandleAsync(BooksRequestQuery request, CancellationToken cancellationToken)
         {
             var pageNumber = request.PageNumber ?? 1;
             var pageSize = request.PageSize ?? 10;
@@ -46,24 +46,20 @@ namespace Libres.API.Features.Books.Application.Queries.Books
                     .OrderBy(x => x.book.Title)
                     .Skip(skipAmount)
                     .Take(request.PageSize ?? 10)
-                    .Select(x => new BookResponse(
+                    .Select(x => new BookSummaryResponse(
                         x.book.Id,
                         x.book.Title,
                         x.user.UserName ?? "",
-                        x.book.UserId,
-                        x.book.CategoryId,
                         x.subCategory != null ? (x.subCategory.Name ?? "") : "",
-
                         x.book.Price,
+                        x.book.Order,
                         x.book.BookStatus.ToString(),
-                        x.book.Description,
                         x.book.CreatedAt,
-                        x.book.CoverImagePath != null ? $"{_fileService.GetBaseUrl()}/{x.book.CoverImagePath}" : null,
-                        x.book.FilePath != null ? $"{_fileService.GetBaseUrl()}/{x.book.FilePath}" : null
+                        x.book.CoverImagePath != null ? $"{_fileService.GetBaseUrl()}/{x.book.CoverImagePath}" : null
                     ))
                     .ToListAsync(cancellationToken);
 
-            return Result<IEnumerable<BookResponse>>.Success(books);
+            return Result<IEnumerable<BookSummaryResponse>>.Success(books);
         }
     }
 }

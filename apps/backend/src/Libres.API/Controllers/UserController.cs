@@ -7,6 +7,7 @@ using Libres.API.Features.Users.Application.Commands.Edit;
 using Libres.API.Features.Users.Application.Commands.Login;
 using Libres.API.Features.Users.Application.Commands.Logout;
 using Libres.API.Features.Users.Application.Commands.Register;
+using Libres.API.Features.Users.Application.Commands.UpdatePassword;
 using Libres.API.Features.Users.Application.Common;
 using Libres.API.Features.Users.Application.Queries.Profile;
 using Libres.API.Shared.Application.CustomError;
@@ -41,6 +42,24 @@ namespace Libres.API.Controllers
         [ProducesResponseType(typeof(Result<SigninResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> Login([FromBody] LoginRequestCommand request, CancellationToken cancellationToken = default)
         {
+            var result = await _mediator.SendAsync(request, cancellationToken);
+
+            return HandleResult(result);
+        }
+
+        [HttpPut("password")]
+        [Authorize]
+        [ProducesResponseType(typeof(Result<string>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ChangePassword([FromBody] UpdatePasswordRequestCommand request, CancellationToken cancellationToken = default)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (!Guid.TryParse(userId, out Guid UserId))
+            {
+                return HandleResult(Result<string>.Failure(Error.NotFound("User not found")));
+
+            }
+            request.UserId = UserId;
             var result = await _mediator.SendAsync(request, cancellationToken);
 
             return HandleResult(result);
@@ -91,7 +110,7 @@ namespace Libres.API.Controllers
         [HttpPut("edit")]
         [Consumes("multipart/form-data")]
         [Authorize]
-        public async Task<IActionResult> EditProfile([FromForm] EditProfileCommand request, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> EditProfile([FromForm] EditProfileRequestCommand request, CancellationToken cancellationToken = default)
         {
 
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;

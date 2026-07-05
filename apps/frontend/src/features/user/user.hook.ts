@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UserService } from "./user.service";
 import { QUERIESKEY } from "@/constants";
-import type { EditProfileCommand } from "./type";
+import type { EditProfileCommand, UpdatePasswordCommand } from "./type";
 export const useGetUserProfileQuery = () => {
   return useQuery({
     queryKey: [QUERIESKEY.USER_PROFILE_KEY],
@@ -22,6 +22,13 @@ export const useEditUserProfileCommand = () => {
         });
       }
     },
+    retry: false,
+  });
+};
+export const useUpdatePassword = () => {
+  return useMutation({
+    mutationFn: (updatePassword: UpdatePasswordCommand) =>
+      UserService.updatePassword(updatePassword),
     retry: false,
   });
 };

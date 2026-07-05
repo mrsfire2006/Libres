@@ -1,7 +1,9 @@
 import { clientFetch } from "@/lib/client/api-client";
 import type {
+  BookByIdRequestQuery,
   BookRequestQuery,
   ResultAllCategories,
+  ResultOfBookResponse,
   ResultOfListBookResponse,
 } from "./type";
 import { APISTOREROUTES } from "./paths";
@@ -32,6 +34,17 @@ export const storeService = {
         method: "GET",
       },
     );
+    return result;
+  },
+  getBookById: async (bookByIdRequestQuery: BookByIdRequestQuery) => {
+    const result: ResultOfBookResponse = await clientFetch(
+      `${APISTOREROUTES.BOOKBYID}`,
+      {
+        method: "GET",
+        body: JSON.stringify(bookByIdRequestQuery),
+      },
+    );
+
     return result;
   },
 };

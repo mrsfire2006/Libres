@@ -1,8 +1,13 @@
-import type { EditProfileCommand, ResultOfUserProfile } from "./type";
+import type {
+  EditProfileCommand,
+  ResultOfString,
+  ResultOfUserProfile,
+  UpdatePasswordCommand,
+} from "./type";
 import { clientFetch } from "@/lib/client/api-client";
 import { USERAPIROUTES } from "./paths";
 import type { Result } from "@/schemas/api-schema";
-
+ 
 export const UserService = {
   getUserProfile: async (): Promise<ResultOfUserProfile> => {
     const result: ResultOfUserProfile = await clientFetch(
@@ -36,6 +41,18 @@ export const UserService = {
       {
         method: "PUT",
         body: formData,
+      },
+    );
+    return result;
+  },
+  updatePassword: async (
+    updatePassword: UpdatePasswordCommand,
+  ): Promise<ResultOfString> => {
+    const result: ResultOfString = await clientFetch(
+      `${USERAPIROUTES.USERUPDATEPASSWORD}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(updatePassword),
       },
     );
     return result;

@@ -7,6 +7,7 @@ import type { BookRequestQuery, CategoryName } from "@/features/store/type"
 import LoadingCircle from "@/components/shared/loading-circle"
 import { useBooks } from "../store.hook"
 import BookCard from "../components/book-card"
+import { Outlet } from "react-router-dom"
 
 
 const ITEMS_PER_PAGE = 24
@@ -30,7 +31,6 @@ function StorePage() {
       PageNumber: 1,
     }))
   }
-  console.log(books?.value)
 
   // const handlePageChange = (page: number) => {
   //   setQuery((prev) => ({ ...prev, PageNumber: page }))
@@ -144,6 +144,7 @@ function StorePage() {
             </Button>
           </div>
         )} */}
+      <Outlet />
     </section>
   )
 }

@@ -6,10 +6,8 @@ using Libres.API.Features.Books.Application.Common;
 using Libres.API.Shared.Application.CustomError;
 using Libres.API.Shared.Application.Mediator;
 
-namespace Libres.API.Features.Books.Application.Queries.Books
+namespace Libres.API.Features.Books.Application.Queries.Book
 {
-    public record BooksRequestQuery(Guid? categoryId,
-         int? PageNumber = 1,
-         int? PageSize = 10) : ICustomRequest<Result<IEnumerable<BookSummaryResponse>>>;
+    public record BookByIdRequestQuery(Guid BookId) : ICustomRequest<Result<BookResponse>>;
 
 }

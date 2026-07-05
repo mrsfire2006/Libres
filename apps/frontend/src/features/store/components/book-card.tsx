@@ -1,12 +1,13 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Star } from "lucide-react"
 import { Link } from "react-router-dom"
-import type { BookResponse } from "../type"
+ import { STOREROUTES } from "../paths"
+import type { BookSummaryResponse } from "../type"
 
-function BookCard({ book }: { book: BookResponse }) {
+function BookCard({ book }: { book: BookSummaryResponse }) {
     return (
         <Link
-            to={`/books/${book?.id}`}
+            to={STOREROUTES.BOOKDETAILS.url(book?.id)}
             className="group/card overflow-hidden flex flex-col gap-3 min-w-40 max-w-45 w-45"
         >
             <Card className="border border-border/60 bg-card shadow-sm hover:shadow-md hover:border-border transition-all duration-300 rounded-lg p-2 flex flex-col gap-3">

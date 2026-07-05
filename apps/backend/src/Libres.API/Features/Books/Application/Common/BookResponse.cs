@@ -14,6 +14,7 @@ namespace Libres.API.Features.Books.Application.Common
          string? CategoryName,
          decimal Price,
          string BookStatus, 
+         int Order,
          string? Description,
          DateTime CreatedAt,
          string? CoverImageUrl,

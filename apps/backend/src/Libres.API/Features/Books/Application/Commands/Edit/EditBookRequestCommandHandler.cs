@@ -56,6 +56,7 @@ namespace Libres.API.Features.Books.Application.Commands.Edit
                  _context.Categories.Where(c => c.Id == book.CategoryId).Select(c => c.Name).FirstOrDefault() ?? "",
                  book.Price,
                  book.BookStatus.ToString(),
+                 book.Order,
                  book.Description,
                  book.CreatedAt,
                  book.CoverImagePath != null ? $"{_fileService.GetBaseUrl()}/{book.CoverImagePath}" : null,

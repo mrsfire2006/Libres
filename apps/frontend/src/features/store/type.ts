@@ -7,10 +7,14 @@ export type ResultAllCategories =
 export type CategoryName = NonNullable<ResultAllCategories["value"]>[number];
 
 export type ResultOfBookResponse = ApiSchemas["ResultOfBookResponse"];
+
 export type ResultOfListBookResponse =
-  ApiSchemas["ResultOfIEnumerableOfBookResponse"];
+  ApiSchemas["ResultOfIEnumerableOfBookSummaryResponse"];
 
 export type BookResponse = ResultOfBookResponse["value"];
+export type BookSummaryResponse = ApiSchemas["BookSummaryResponse"];
+
+export type BookByIdRequestQuery = paths["/api/book/id"]["get"]["parameters"]["query"];
 
 
 

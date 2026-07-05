@@ -82,6 +82,7 @@ namespace Libres.API.Features.Books.Application.Commands.Create
          details?.CategoryName ?? "",
          book.Price,
          book.BookStatus.ToString(),
+         book.Order,
          book.Description,
          book.CreatedAt,
          book.CoverImagePath != null ? $"{_fileService.GetBaseUrl()}/{book.CoverImagePath}" : null,

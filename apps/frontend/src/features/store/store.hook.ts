@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { storeService } from "./store.service";
 import { QUERIESKEY } from "@/constants";
-import type { BookRequestQuery } from "./type";
-
+import type { BookByIdRequestQuery, BookRequestQuery } from "./type";
 
 export const useCategories = () => {
   return useQuery({
@@ -17,5 +16,12 @@ export const useBooks = (query: BookRequestQuery) => {
     queryFn: () => storeService.getBooks(query),
     queryKey: ["books", query],
     staleTime: 5 * 60 * 1000,
+  });
+};
+export const useGetBookById = (bookId: BookByIdRequestQuery) => {
+  return useQuery({
+    queryFn: () => storeService.getBookById(bookId),
+    queryKey: ["books", bookId],
+    staleTime: 5 * 60 * 1000 * 60,
   });
 };

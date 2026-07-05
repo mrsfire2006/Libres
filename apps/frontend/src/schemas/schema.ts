@@ -217,9 +217,48 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ResultOfIEnumerableOfBookResponse"];
-                        "application/json": components["schemas"]["ResultOfIEnumerableOfBookResponse"];
-                        "text/json": components["schemas"]["ResultOfIEnumerableOfBookResponse"];
+                        "text/plain": components["schemas"]["ResultOfIEnumerableOfBookSummaryResponse"];
+                        "application/json": components["schemas"]["ResultOfIEnumerableOfBookSummaryResponse"];
+                        "text/json": components["schemas"]["ResultOfIEnumerableOfBookSummaryResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/book/id": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    BookId?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ResultOfBookResponse"];
+                        "application/json": components["schemas"]["ResultOfBookResponse"];
+                        "text/json": components["schemas"]["ResultOfBookResponse"];
                     };
                 };
             };
@@ -484,6 +523,49 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/user/password": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdatePasswordRequestCommand"];
+                    "text/json": components["schemas"]["UpdatePasswordRequestCommand"];
+                    "application/*+json": components["schemas"]["UpdatePasswordRequestCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ResultOfstring"];
+                        "application/json": components["schemas"]["ResultOfstring"];
+                        "text/json": components["schemas"]["ResultOfstring"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/user/logout": {
         parameters: {
             query?: never;
@@ -622,6 +704,8 @@ export interface components {
             /** Format: double */
             price: number | string;
             bookStatus: string;
+            /** Format: int32 */
+            order: number | string;
             description: null | string;
             /** Format: date-time */
             createdAt: string;
@@ -630,6 +714,21 @@ export interface components {
         };
         /** @enum {unknown} */
         BookStatus: "Accepted" | "Rejected" | "Pending";
+        BookSummaryResponse: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            author: string;
+            categoryName: null | string;
+            /** Format: double */
+            price: number | string;
+            /** Format: int32 */
+            order: number | string;
+            bookStatus: string;
+            /** Format: date-time */
+            publishedAt: string;
+            coverImageUrl: null | string;
+        };
         CategoryResponse: {
             /** Format: uuid */
             categoryId: string;
@@ -681,10 +780,10 @@ export interface components {
             value?: components["schemas"]["CategoryResponse"];
             error?: components["schemas"]["Error"];
         };
-        ResultOfIEnumerableOfBookResponse: {
+        ResultOfIEnumerableOfBookSummaryResponse: {
             isSuccess?: boolean;
             isFailure?: boolean;
-            value?: null | components["schemas"]["BookResponse"][];
+            value?: null | components["schemas"]["BookSummaryResponse"][];
             error?: components["schemas"]["Error"];
         };
         ResultOfIEnumerableOfCategoryResponse: {
@@ -727,6 +826,10 @@ export interface components {
         SigninResponse: {
             /** Format: uuid */
             userId: string;
+        };
+        UpdatePasswordRequestCommand: {
+            currentPassword: string;
+            newPassword: string;
         };
         UserProfileResponse: {
             /** Format: uuid */

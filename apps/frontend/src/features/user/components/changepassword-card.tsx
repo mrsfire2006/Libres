@@ -1,38 +1,58 @@
 import { useState } from "react";
-import { KeyRound } from "lucide-react";
+import { Eye, EyeOff, KeyRound, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
- 
-export function ChangePasswordCard() {
-    const [currentPassword, setCurrentPassword] = useState("");
-    const [newPassword, setNewPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [successMessage, setSuccessMessage] = useState(false);
-    // const { changePasswordMutation } = useUserMutations();
+import type { UpdatePasswordCommand } from "../type";
+import { useUpdatePassword } from "../user.hook";
 
-    const mismatch = confirmPassword.length > 0 && newPassword !== confirmPassword;
+type MessageState = "none" | "error" | 'success'
+type Message = {
+    state: MessageState,
+    message: string
+}
+export function ChangePasswordCard() {
+    const [passwordCommand, setPasswordCommand] = useState<UpdatePasswordCommand>({ currentPassword: "", newPassword: "" });
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+
+    const [message, setMessage] = useState<Message>({
+        message: "",
+        state: "none"
+    });
+
+    const { mutateAsync: UpdatePassword, isPending } = useUpdatePassword();
+
+    const mismatch = passwordCommand.newPassword !== confirmPassword;
+
     const canSubmit =
-        currentPassword.length > 0 &&
-        newPassword.length >= 8 &&
-        newPassword === confirmPassword 
-        // &&
-        // !changePasswordMutation.isPending;
+        passwordCommand.newPassword === confirmPassword &&
+        !isPending;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!canSubmit) return;
 
-        setSuccessMessage(false);
+        setMessage({
+            message: "",
+            state: "none"
+        });
         try {
-            // await changePasswordMutation.mutateAsync({ currentPassword, newPassword });
-            setCurrentPassword("");
-            setNewPassword("");
-            setConfirmPassword("");
-            setSuccessMessage(true);
+            const result = await UpdatePassword(passwordCommand);
+            console.log(result)
+            if (result.isFailure) {
+                setMessage({ message: result.error?.message!, state: "error" });
+            }
+            else if (result.isSuccess) {
+                setMessage({ message: result.value!, state: "success" });
+            }
         } catch {
-            // الخطأ متعروض تحت عن طريق changePasswordMutation.isError
+            setMessage({
+                message: "حدث خطأ غير متوقع، يرجى المحاولة لاحقاً.",
+                state: "error"
+            });
         }
+
     };
 
     return (
@@ -45,56 +65,88 @@ export function ChangePasswordCard() {
             <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                 <div className="space-y-1.5">
                     <Label htmlFor="current-password">كلمة المرور الحالية</Label>
-                    <Input
-                        id="current-password"
-                        type="password"
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                        autoComplete="current-password"
-                    />
+                    <div className="relative">
+                        <Input
+                            id="current-password"
+                            type={showPassword ? "text" : "password"}
+                            value={passwordCommand.currentPassword}
+                            onChange={(e) => setPasswordCommand({ ...passwordCommand, currentPassword: e.target.value })}
+                            autoComplete="current-password"
+                            className="pr-10" // مساحة للأيقونة على اليمين
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute inset-y-0 right-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                            tabIndex={-1}
+                        >
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                    </div>
                 </div>
 
                 <div className="space-y-1.5">
                     <Label htmlFor="new-password">كلمة المرور الجديدة</Label>
-                    <Input
-                        id="new-password"
-                        type="password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        autoComplete="new-password"
-                    />
-                    {newPassword.length > 0 && newPassword.length < 8 && (
-                        <p className="text-xs text-muted-foreground">لازم تكون 8 حروف على الأقل.</p>
-                    )}
+                    <div className="relative">
+                        <Input
+                            id="new-password"
+                            type={showPassword ? "text" : "password"}
+                            value={passwordCommand.newPassword}
+                            onChange={(e) => setPasswordCommand({ ...passwordCommand, newPassword: e.target.value })}
+                            autoComplete="new-password"
+                            className="pr-10"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute inset-y-0 right-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                            tabIndex={-1}
+
+                        >
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                    </div>
                 </div>
 
                 <div className="space-y-1.5">
                     <Label htmlFor="confirm-password">تأكيد كلمة المرور</Label>
-                    <Input
-                        id="confirm-password"
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        autoComplete="new-password"
-                    />
+                    <div className="relative">
+                        <Input
+                            id="confirm-password"
+                            type={showPassword ? "text" : "password"}
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            autoComplete="new-password"
+                            className="pr-10" // مساحة للأيقونة على اليمين
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute inset-y-0 right-3 flex items-center text-muted-foreground hover:text-foreground transition-colors"
+                            tabIndex={-1}
+
+                        >
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                    </div>
                     {mismatch && (
-                        <p className="text-xs text-destructive">كلمتا المرور غير متطابقتين.</p>
+                        <p className="text-xs text-destructive mt-1">كلمتا المرور غير متطابقتين.</p>
                     )}
                 </div>
 
-                {/* {changePasswordMutation.isError && (
-                    <p className="text-sm text-destructive">تعذر تغيير كلمة المرور، تأكد من كلمة المرور الحالية.</p>
-                )} */}
-                {successMessage && (
-                    <p className="text-sm text-emerald-600 dark:text-emerald-400">تم تغيير كلمة المرور بنجاح.</p>
+                {message && message.state == "error" && (
+                    <p className="text-sm text-destructive">{message.message}</p>
+                )}
+                {message && message.state == "success" && (
+                    <p className="text-sm text-emerald-600 dark:text-emerald-400">{message.message}</p>
                 )}
 
                 <Button type="submit" disabled={!canSubmit} className="self-start mt-1">
-                    {/* {changePasswordMutation.isPending ? (
+                    {isPending ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
                         "حفظ كلمة المرور"
-                    )} */}
+                    )}
                 </Button>
             </form>
         </div>

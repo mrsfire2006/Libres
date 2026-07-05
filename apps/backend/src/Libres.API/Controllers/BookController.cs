@@ -6,12 +6,14 @@ using Libres.API.Features.Books.Application.Commands.Delete;
 using Libres.API.Features.Books.Application.Commands.Edit;
 using Libres.API.Features.Books.Application.Commands.UpdateStatus;
 using Libres.API.Features.Books.Application.Common;
+using Libres.API.Features.Books.Application.Queries.Book;
 using Libres.API.Features.Books.Application.Queries.Books;
 using Libres.API.Shared.Application.CustomError;
 using Libres.API.Shared.Application.Mediator;
 using Libres.API.Shared.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CodeFixes;
 
 namespace Libres.API.Controllers
 {
@@ -70,8 +72,17 @@ namespace Libres.API.Controllers
         }
 
         [HttpGet("books")]
-        [ProducesResponseType(typeof(Result<IEnumerable<BookResponse>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<IEnumerable<BookSummaryResponse>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> BooksByCategoryId([FromQuery] BooksRequestQuery request, CancellationToken cancellationToken)
+        {
+            var result = await _mediator.SendAsync(request, cancellationToken);
+            return HandleResult(result);
+        }
+
+
+        [HttpGet("id")]
+        [ProducesResponseType(typeof(Result<BookResponse>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> BookById([FromQuery] BookByIdRequestQuery request, CancellationToken cancellationToken)
         {
             var result = await _mediator.SendAsync(request, cancellationToken);
             return HandleResult(result);
@@ -87,7 +98,7 @@ namespace Libres.API.Controllers
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             request.UserId = Guid.Parse(userId!);
-            
+
             var result = await _mediator.SendAsync(request, cancellationToken);
             return HandleResult(result);
         }
