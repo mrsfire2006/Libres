@@ -25,11 +25,21 @@ namespace Libres.API.Shared.Application.Services
                 return _options.BaseUrl;
             }
 
+
             var request = _httpContextAccessor.HttpContext?.Request;
             if (request != null)
             {
-                return $"{request.Scheme}://{request.Host}{request.PathBase}";
+                var forwardedHost = request.Headers["X-Forwarded-Host"].FirstOrDefault();
+                var forwardedProto = request.Headers["X-Forwarded-Proto"].FirstOrDefault();
+
+                var host = !string.IsNullOrEmpty(forwardedHost) ? forwardedHost : request.Host.ToString();
+                var scheme = !string.IsNullOrEmpty(forwardedProto) ? forwardedProto : request.Scheme;
+
+                return $"{scheme}://{host}{request.PathBase}";
             }
+
+
+
 
             return "http://localhost:5045";
         }
