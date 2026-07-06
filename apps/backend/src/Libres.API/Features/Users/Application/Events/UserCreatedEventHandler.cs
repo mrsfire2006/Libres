@@ -15,15 +15,14 @@ namespace Libres.API.Features.Users.Application.Events
         {
             _context = context;
         }
-        public Task HandleAsync(UserCreatedEvent notification, CancellationToken cancellationToken = default)
+        public async Task HandleAsync(UserCreatedEvent notification, CancellationToken cancellationToken = default)
         {
             if (notification.UserId == Guid.Empty)
                 throw new InvalidOperationException("UserId جاي فاضي! المشكلة قبل كده في مكان تاني.");
 
             var walletResult = Wallet.Domain.Wallet.Create(notification.UserId);
 
-            _context.Wallets.Add(walletResult.Value!);
-            return Task.CompletedTask;
+            await _context.Wallets.AddAsync(walletResult.Value!);
         }
     }
 }

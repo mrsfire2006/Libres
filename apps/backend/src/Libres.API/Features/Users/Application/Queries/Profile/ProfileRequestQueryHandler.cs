@@ -13,9 +13,9 @@ namespace Libres.API.Features.Users.Application.Queries.Profile
 {
     public class ProfileRequestQueryHandler : ICustomRequestHandler<ProfileRequestQuery, Result<UserProfileResponse>>
     {
-        private  readonly FileService _fileService;
+        private readonly FileService _fileService;
         public readonly AppDbContext _context;
-        public ProfileRequestQueryHandler(AppDbContext context,FileService fileService)
+        public ProfileRequestQueryHandler(AppDbContext context, FileService fileService)
         {
             _context = context;
             _fileService = fileService;
@@ -37,10 +37,11 @@ namespace Libres.API.Features.Users.Application.Queries.Profile
 
             if (user == null)
             {
-                return Result<UserProfileResponse>.Failure(Error.NotFound("User not found"));
-            }
+                return new ResultBuilder<UserProfileResponse>().WithFailure("User not found").Build();
 
-            return Result<UserProfileResponse>.Success(user);
+            }
+            return new ResultBuilder<UserProfileResponse>().WithSuccess(user).Build();
+
 
         }
     }

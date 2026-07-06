@@ -27,20 +27,20 @@ namespace Libres.API.Features.Users.Application.Commands.Login
 
             if (user == null)
             {
-                return Result<SigninResponse>.Failure(Error.Validation("Invalid email or password."));
+                return new ResultBuilder<SigninResponse>().WithFailure("Invalid email or password.").Build();
             }
 
             var result = await _signInManager.PasswordSignInAsync(user.UserName!, request.Password, isPersistent: true, lockoutOnFailure: false);
 
             if (!result.Succeeded)
             {
+                return new ResultBuilder<SigninResponse>().WithFailure("Invalid email or password.").Build();
 
-                return Result<SigninResponse>.Failure(Error.Validation("Invalid email or password."));
             }
 
+            return new ResultBuilder<SigninResponse>().WithSuccess(new SigninResponse(
+                user.Id)).Build();
 
-            return Result<SigninResponse>.Success(new SigninResponse(
-                user.Id));
         }
     }
 }

@@ -21,14 +21,17 @@ namespace Libres.API.Features.Categories.Application.Commands.Edit
         {
             if (!Guid.TryParse(request.categoryId, out Guid CategoryId))
             {
-                return Result<string>.Failure(Error.Validation("Id is not valid"));
+
+                return new ResultBuilder<string>().WithSuccess("Id is not valid").Build();
+
             }
 
             var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == CategoryId, cancellationToken);
 
             if (category == null)
             {
-                return Result<string>.Failure(Error.NotFound("Category not found"));
+                return new ResultBuilder<string>().WithSuccess("Category not found").Build();
+
             }
 
             var result = category.ChangeName(request.newName);
@@ -42,7 +45,9 @@ namespace Libres.API.Features.Categories.Application.Commands.Edit
 
 
             await _context.SaveChangesAsync(cancellationToken);
-            return Result<string>.Success("Category Changed");
+
+            return new ResultBuilder<string>().WithSuccess("Category Changed").Build();
+
         }
     }
 }

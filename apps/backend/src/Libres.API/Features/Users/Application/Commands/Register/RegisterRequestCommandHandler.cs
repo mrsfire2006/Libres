@@ -36,34 +36,36 @@ namespace Libres.API.Features.Users.Application.Commands.Register
 
             if (userExists)
             {
-                return Result<SigninResponse>.Failure(Error.Conflict("Username or Email is already used"));
-
+                return new ResultBuilder<SigninResponse>().WithFailure("Username or Email is already used").Build();
             }
 
             var role = request.roles;
             if (!Enum.IsDefined<UserRoles>(role))
             {
-                return Result<SigninResponse>.Failure(Error.Conflict("Role is not exist"));
+                return new ResultBuilder<SigninResponse>().WithFailure("Role is not exist").Build();
+
 
             }
             if (role == UserRoles.SuperAdmin)
             {
-                return Result<SigninResponse>.Failure(Error.Validation("Cannot create super admin"));
-
+                return new ResultBuilder<SigninResponse>().WithFailure("Cannot create super admin", 403).Build();
             }
 
             if (request.CurrentUserRole != null && role == UserRoles.Admin && request.CurrentUserRole != UserRoles.SuperAdmin)
             {
+                return new ResultBuilder<SigninResponse>().WithFailure("Forbidden User", 403).Build();
 
-                return Result<SigninResponse>.Failure(Error.Validation("Forbidden User"));
             }
 
 
 
 
             var userResult = User.Create(request.Username, request.Email, request.password, null, role);
+            if (userResult.IsFailure)
+            {
+                return new ResultBuilder<SigninResponse>().WithFailure(userResult.ErrorMessage, userResult.StatusCode).Build();
+            }
             var user = userResult.Value!;
-
 
             using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
             try
@@ -74,9 +76,10 @@ namespace Libres.API.Features.Users.Application.Commands.Register
                 if (!createResult.Succeeded)
                 {
                     var firstError = createResult.Errors.First().Description;
-                    return Result<SigninResponse>.Failure(Error.Validation(firstError));
+                    return new ResultBuilder<SigninResponse>().WithFailure(firstError).Build();
+
                 }
-                if(role != UserRoles.Reader)
+                if (role != UserRoles.Reader)
                 {
                     user.ClearDomainEvents();
                 }
@@ -98,7 +101,8 @@ namespace Libres.API.Features.Users.Application.Commands.Register
 
                 await _signInManager.SignInAsync(user, true);
 
-                return Result<SigninResponse>.Success(new SigninResponse(user.Id));
+
+                return new ResultBuilder<SigninResponse>().WithSuccess(new SigninResponse(user.Id)).Build();
             }
             catch (Exception)
             {
@@ -110,20 +114,5 @@ namespace Libres.API.Features.Users.Application.Commands.Register
 
         }
 
-        private async Task<string?> SaveImageAsync(IFormFile? file, string folder)
-        {
-            if (file is null) return null;
-
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            var folderPath = Path.Combine("uploads", folder);
-
-            Directory.CreateDirectory(folderPath);
-
-            var fullPath = Path.Combine(folderPath, fileName);
-            using var stream = new FileStream(fullPath, FileMode.Create);
-            await file.CopyToAsync(stream);
-
-            return $"{folderPath}/{fileName}";
-        }
     }
 }

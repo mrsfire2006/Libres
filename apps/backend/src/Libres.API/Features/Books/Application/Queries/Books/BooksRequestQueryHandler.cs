@@ -59,7 +59,8 @@ namespace Libres.API.Features.Books.Application.Queries.Books
                     ))
                     .ToListAsync(cancellationToken);
 
-            return Result<IEnumerable<BookSummaryResponse>>.Success(books);
+            return new ResultBuilder<IEnumerable<BookSummaryResponse>>().WithSuccess(books).Build();
+
         }
     }
 }

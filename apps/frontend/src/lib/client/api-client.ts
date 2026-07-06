@@ -33,11 +33,8 @@ export async function clientFetch<T>(
       isSuccess: false,
       isFailure: true,
       value: null as T,
-      error: {
-        message:
-          data?.error?.message || `خطأ من الخادم بحالة: ${response.status}`,
-        type: response.status,
-      },
+      statusCode: 400,
+      errorMessage: data?.errorMessage ?? "",
     };
   }
   return data;

@@ -84,6 +84,14 @@ namespace Libres.API.Controllers
         [ProducesResponseType(typeof(Result<BookResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> BookById([FromQuery] BookByIdRequestQuery request, CancellationToken cancellationToken)
         {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (!Guid.TryParse(userId, out Guid UserId))
+            {
+                HandleResult(new ResultBuilder<string>().WithFailure("User not found").Build());
+
+            }
+            request.UserId = UserId;
             var result = await _mediator.SendAsync(request, cancellationToken);
             return HandleResult(result);
         }
@@ -93,7 +101,7 @@ namespace Libres.API.Controllers
 
         [HttpPost("review")]
         [Authorize]
-        [ProducesResponseType(typeof(Result<ReviewResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddReview([FromBody] CreateReviewRequestCommand request, CancellationToken cancellationToken)
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;

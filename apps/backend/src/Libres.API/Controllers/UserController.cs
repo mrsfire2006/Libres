@@ -12,6 +12,7 @@ using Libres.API.Features.Users.Application.Common;
 using Libres.API.Features.Users.Application.Queries.Profile;
 using Libres.API.Shared.Application.CustomError;
 using Libres.API.Shared.Application.Mediator;
+using Libres.API.Shared.Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,6 +32,13 @@ namespace Libres.API.Controllers
         [ProducesResponseType(typeof(Result<SigninResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> Register([FromBody] RegisterRequestCommand request, CancellationToken cancellationToken = default)
         {
+            var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+
+            if (Enum.TryParse(role, out UserRoles Role))
+            {
+                request.CurrentUserRole = Role;
+            }
+
             var result = await _mediator.SendAsync(request, cancellationToken);
 
             return HandleResult(result);
@@ -56,7 +64,7 @@ namespace Libres.API.Controllers
 
             if (!Guid.TryParse(userId, out Guid UserId))
             {
-                return HandleResult(Result<string>.Failure(Error.NotFound("User not found")));
+                HandleResult(new ResultBuilder<string>().WithFailure("User not found").Build());
 
             }
             request.UserId = UserId;
@@ -75,7 +83,8 @@ namespace Libres.API.Controllers
 
             if (!Guid.TryParse(userId, out Guid UserId))
             {
-                return HandleResult(Result<string>.Failure(Error.NotFound("User not found")));
+                HandleResult(new ResultBuilder<string>().WithFailure("User not found").Build());
+
 
             }
 
@@ -96,7 +105,8 @@ namespace Libres.API.Controllers
 
             if (!Guid.TryParse(userId, out Guid UserId))
             {
-                return HandleResult(Result<string>.Failure(Error.NotFound("User not found")));
+                HandleResult(new ResultBuilder<string>().WithFailure("User not found").Build());
+
 
             }
             var request = new ProfileRequestQuery(UserId);
@@ -117,7 +127,8 @@ namespace Libres.API.Controllers
 
             if (!Guid.TryParse(userId, out Guid UserId))
             {
-                return HandleResult(Result<string>.Failure(Error.NotFound("User not found")));
+                HandleResult(new ResultBuilder<string>().WithFailure("User not found").Build());
+
 
             }
             request.UserId = UserId;

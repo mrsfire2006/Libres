@@ -41,7 +41,7 @@ export function ChangePasswordCard() {
             const result = await UpdatePassword(passwordCommand);
             console.log(result)
             if (result.isFailure) {
-                setMessage({ message: result.error?.message!, state: "error" });
+                setMessage({ message: result.errorMessage!, state: "error" });
             }
             else if (result.isSuccess) {
                 setMessage({ message: result.value!, state: "success" });

@@ -1,6 +1,8 @@
 using Libres.API.Common;
 using Libres.API.Features;
+using Libres.API.Features.Users.Domain;
 using Libres.API.Shared;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.FileProviders;
 using Scalar.AspNetCore;
 
@@ -22,7 +24,9 @@ builder.Services.AddSharedApplicationServices(typeof(FeaturesAssemblyMarker).Ass
 //     {
 //         options.JsonSerializerOptions.TypeInfoResolver = AppJsonSerializerContext.Default;
 //     });
-
+var hasher = new PasswordHasher<User>();
+var hash = hasher.HashPassword(null!, "mrs");
+ 
 
 var app = builder.Build();
 
@@ -52,4 +56,5 @@ app.UseStaticFiles(new StaticFileOptions
 app.MapControllers();
 
 app.Run();
+
 

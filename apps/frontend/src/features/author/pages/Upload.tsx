@@ -1,11 +1,9 @@
 
 import { UploadCloud } from "lucide-react"
 import { FileUploader } from "@/features/author/components/file-uploader"
-import { useCategories } from "@/features/store/store.hook"
-
+ 
 
 export default function UploadBookPage() {
-    const { data: categories } = useCategories();
 
 
 
@@ -21,7 +19,7 @@ export default function UploadBookPage() {
 
             {/* Container for the form component */}
             <div className="bg-card border border-border rounded-2xl shadow-sm p-6 md:p-8">
-                <FileUploader categories={categories?.value} />
+                <FileUploader  />
             </div>
         </section>
     )

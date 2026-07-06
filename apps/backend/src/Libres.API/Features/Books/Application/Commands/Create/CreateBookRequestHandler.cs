@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Libres.API.Common;
 using Libres.API.Data.Persistence;
 using Libres.API.Features.Books.Application.Common;
+using Libres.API.Features.Books.Application.Extensions;
 using Libres.API.Features.Books.Domain;
 using Libres.API.Shared.Application.CustomError;
 using Libres.API.Shared.Application.Mediator;
@@ -50,7 +51,8 @@ namespace Libres.API.Features.Books.Application.Commands.Create
                 {
                     DeleteFileIfExists(coverImagePath);
                     DeleteFileIfExists(filePath);
-                    return Result<BookResponse>.Failure(bookValue.Error);
+                    return new ResultBuilder<BookResponse>().WithFailure(bookValue.ErrorMessage).Build();
+
                 }
 
                 var book = bookValue.Value!;
@@ -71,7 +73,18 @@ namespace Libres.API.Features.Books.Application.Commands.Create
                                      })
                                      .FirstOrDefaultAsync(cancellationToken);
 
-                return Result<BookResponse>.Success(new BookResponse
+
+                long fileSizeInBytes = 0;
+                int pagesCount = 0;
+                if (book.FilePath != null)
+                {
+                    pagesCount = BookExtenstions.GetPdfPageCount(book.FilePath);
+                    fileSizeInBytes = BookExtenstions.GetPdfSize(book.FilePath);
+
+                }
+
+
+                return new ResultBuilder<BookResponse>().WithSuccess(new BookResponse
 
      (
          book.Id,
@@ -86,8 +99,14 @@ namespace Libres.API.Features.Books.Application.Commands.Create
          book.Description,
          book.CreatedAt,
          book.CoverImagePath != null ? $"{_fileService.GetBaseUrl()}/{book.CoverImagePath}" : null,
-         book.FilePath != null ? $"{_fileService.GetBaseUrl()}/{book.FilePath}" : null
-     ));
+         book.FilePath != null ? $"{_fileService.GetBaseUrl()}/{book.FilePath}" : null,
+        null,
+        book.AverageRate,
+        pagesCount,
+        fileSizeInBytes
+
+
+     )).Build();
             }
             catch (Exception)
             {

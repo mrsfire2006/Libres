@@ -72,7 +72,7 @@ namespace Libres.API.Features.Books.Domain
         {
             if (string.IsNullOrWhiteSpace(newName))
             {
-                return Result<bool>.Failure(Error.Validation("New Name Cannot be empty"));
+                return Result<bool>.Failure("New Name Cannot be empty");
             }
             this.Title = newName;
             return Result<bool>.Success(true);
@@ -95,5 +95,7 @@ namespace Libres.API.Features.Books.Domain
             this._reviews.Remove(review);
 
         }
+
+        public double AverageRate => _reviews.Any() ? _reviews.Average(r => r.Rating) : 0.0;
     }
 }

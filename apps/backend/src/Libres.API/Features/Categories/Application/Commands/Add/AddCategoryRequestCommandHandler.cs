@@ -25,14 +25,16 @@ namespace Libres.API.Features.Categories.Application.Commands.Add
 
             if (categoryResult.IsFailure)
             {
-                return Result<CategoryResponse>.Failure(categoryResult.Error);
+                return new ResultBuilder<CategoryResponse>().WithFailure(categoryResult.ErrorMessage).Build();
+
             }
 
             var category = categoryResult.Value!;
             _context.Categories.Add(category);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return Result<CategoryResponse>.Success(new CategoryResponse(category.Id, category.Name, category.Description));
+            return new ResultBuilder<CategoryResponse>().WithSuccess(new CategoryResponse(category.Id, category.Name, category.Description)).Build();
+
         }
     }
 }

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Libres.API.Features.Books.Application.Commands.CreateReview
 {
-    public record CreateReviewRequestCommand(Guid BookId, string comment, int rating = 0) : ICustomRequest<Result<ReviewResponse>>
+    public record CreateReviewRequestCommand(Guid BookId, string comment, int rating = 0) : ICustomRequest<Result>
     {
         [JsonIgnore]
         [BindNever]

@@ -25,15 +25,18 @@ namespace Libres.API.Features.Users.Application.Commands.Logout
         public async Task<Result<string>> HandleAsync(LogoutRequestCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(request.UserId.ToString());
-            
+
             if (user == null)
             {
-                return Result<string>.Failure(Error.NotFound("User not found"));
+                return new ResultBuilder<string>().WithFailure("User not found").Build();
+
             }
             await _signInManager.SignOutAsync();
             await _userManager.UpdateSecurityStampAsync(user);
 
-            return Result<string>.Success("logged out");
+
+            return new ResultBuilder<string>().WithSuccess("logged out").Build();
+
         }
     }
 }

@@ -50,9 +50,8 @@ export function SignupForm() {
             }
             const result = await register(formData);
 
-
-            if (result?.isFailure) {
-                setError(result.error?.message || "Registration failed");
+             if (result?.isFailure) {
+                setError(result.errorMessage || "Registration failed");
             } else {
                 navigate(HOMEROUTES.INDEX);
             }

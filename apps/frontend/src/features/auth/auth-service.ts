@@ -30,8 +30,7 @@ export const AuthService = {
         body: JSON.stringify(registerRequest),
       },
     );
-
-    return result;
+     return result;
   },
   logout: async (): Promise<void> => {
     await clientFetch(`${AUTHAPIROUTES.LOGOUT}`, {

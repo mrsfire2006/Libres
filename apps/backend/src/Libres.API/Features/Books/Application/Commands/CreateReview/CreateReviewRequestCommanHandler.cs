@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Libres.API.Features.Books.Application.Commands.CreateReview
 {
-    public class CreateReviewRequestCommanHandler : ICustomRequestHandler<CreateReviewRequestCommand, Result<ReviewResponse>>
+    public class CreateReviewRequestCommanHandler : ICustomRequestHandler<CreateReviewRequestCommand, Result>
     {
 
         private readonly AppDbContext _context;
@@ -19,29 +19,40 @@ namespace Libres.API.Features.Books.Application.Commands.CreateReview
         {
             _context = context;
         }
-        public async Task<Result<ReviewResponse>> HandleAsync(CreateReviewRequestCommand request, CancellationToken cancellationToken)
+        public async Task<Result> HandleAsync(CreateReviewRequestCommand request, CancellationToken cancellationToken)
         {
+
             var reviewResult = Review.Create(request.UserId, request.BookId, request.comment, request.rating);
 
             if (reviewResult.IsFailure)
             {
-                return Result<ReviewResponse>.Failure(reviewResult.Error);
+                return new ResultBuilder().WithFailure(reviewResult.ErrorMessage).Build();
+
             }
             var review = reviewResult.Value!;
             var book = await _context.Books.FirstOrDefaultAsync(x => x.Id == request.BookId);
 
+
             if (book == null)
             {
-                return Result<ReviewResponse>.Failure(Error.NotFound("Book Not Found"));
+                return new ResultBuilder<ReviewResponse>().WithFailure("Book Not Found").Build();
+
 
             }
 
             book.AddReview(review);
+            try
+            {
 
-            await _context.SaveChangesAsync(cancellationToken);
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+            catch
+            {
+                return new ResultBuilder().WithFailure("User is already reviewed").Build();
+            }
 
+            return new ResultBuilder().WithSuccess().Build();
 
-            return Result<ReviewResponse>.Success(new ReviewResponse(review.Id, review.Comment, review.Rating));
 
         }
     }

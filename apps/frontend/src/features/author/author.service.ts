@@ -1,6 +1,6 @@
-import { APIROUTES } from "@/constants";
-import { clientFetch } from "@/lib/client/api-client";
+ import { clientFetch } from "@/lib/client/api-client";
 import type { ResultOfBookResponse } from "../store/type";
+import { APIAUTHORROUTES } from "./paths";
 export const mockBooks = [
   {
     id: "1",
@@ -101,11 +101,14 @@ export const mockRecentActivity = [
 
 export const AuthorService = {
   uploadFile: async (formData: FormData) => {
-    const response: ResultOfBookResponse = await clientFetch(APIROUTES.UPLOAD, {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    });
+    const response: ResultOfBookResponse = await clientFetch(
+      APIAUTHORROUTES.UPLOAD,
+      {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      },
+    );
 
     return response;
   },

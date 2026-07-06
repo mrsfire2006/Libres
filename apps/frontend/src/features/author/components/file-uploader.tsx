@@ -4,21 +4,19 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DollarSign, UploadCloud, ImageIcon, AlertCircle, CheckCircle2 } from 'lucide-react';
 
-// تأكد من استيراد الأنواع الصحيحة
 import type { CreateBookRequest, UploadStatus } from '../type';
 import { useAuthor } from '../author.hook';
-import type { ResultAllCategories } from '@/features/store/type';
 import { useGetUserProfileQuery } from '@/features/user/user.hook';
+import { useCategories } from '@/features/store/store.hook';
 
-interface FileUploaderProps {
-    categories?: ResultAllCategories["value"];
-}
 
-export function FileUploader({ categories = [] }: FileUploaderProps) {
+export function FileUploader() {
+    const { data: categories } = useCategories();
     const [book, setBook] = useState<Partial<CreateBookRequest>>({});
     const [status, setStatus] = useState<UploadStatus>("idle");
     const [error, setError] = useState("");
     const { data: user } = useGetUserProfileQuery();
+
 
     const { mutateAsync: upload } = useAuthor().uploadBook;
 
@@ -58,9 +56,9 @@ export function FileUploader({ categories = [] }: FileUploaderProps) {
 
             if (result.isSuccess) {
                 setStatus("success");
-                setBook({}); // تفريغ الفورم بعد النجاح
+                setBook({});
             } else {
-                setError(result.error?.message || "An error occurred during upload");
+                setError(result.errorMessage! || "An error occurred during upload");
                 setStatus("error");
             }
         } catch (ex) {
@@ -100,7 +98,7 @@ export function FileUploader({ categories = [] }: FileUploaderProps) {
                             <SelectValue placeholder="Select the appropriate category" />
                         </SelectTrigger>
                         <SelectContent>
-                            {categories && categories.map((cat) => (
+                            {categories?.value && categories.value.map((cat) => (
                                 <SelectItem key={cat.categoryId} value={cat.categoryId}>
                                     {cat.name}
                                 </SelectItem>
@@ -120,7 +118,7 @@ export function FileUploader({ categories = [] }: FileUploaderProps) {
                             type="number"
                             min="0"
                             step="0.1"
-                            value={book.Price || ""}
+                            value={book.Price}
                             onChange={(e) => setBook({ ...book, Price: Number(e.target.value) })}
                             placeholder="0.00"
                             className="pl-9"

@@ -14,9 +14,12 @@ export type ResultOfListBookResponse =
 export type BookResponse = ResultOfBookResponse["value"];
 export type BookSummaryResponse = ApiSchemas["BookSummaryResponse"];
 
-export type BookByIdRequestQuery = paths["/api/book/id"]["get"]["parameters"]["query"];
+export type BookByIdRequestQuery =
+  paths["/api/book/id"]["get"]["parameters"]["query"];
 
-
+export type ReviewResponse = ApiSchemas["ReviewResponse"];
 
 export type BookRequestQuery =
   paths["/api/book/books"]["get"]["parameters"]["query"];
+
+export type ReviewRequestCommand = ApiSchemas["CreateReviewRequestCommand"];

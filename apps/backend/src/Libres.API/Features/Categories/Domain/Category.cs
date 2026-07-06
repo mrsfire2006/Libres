@@ -28,7 +28,7 @@ namespace Libres.API.Features.Categories.Domain
         {
             if (string.IsNullOrWhiteSpace(Name))
             {
-                return Result<Category>.Failure(Error.Validation("Category Name"));
+                return Result<Category>.Failure("Category Name");
 
             }
             var category = new Category(Guid.NewGuid(), Name, Description);
@@ -40,7 +40,7 @@ namespace Libres.API.Features.Categories.Domain
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                return Result<string>.Failure(Error.Validation("Category Name is required"));
+                return Result<string>.Failure("Category Name is required");
             }
 
             Name = name;

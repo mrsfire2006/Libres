@@ -239,31 +239,92 @@ namespace Libres.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Review",
+                name: "Libraries",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    BookId = table.Column<Guid>(type: "uuid", nullable: false),
+                    GrantedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsBlocked = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Libraries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Libraries_Books_BookId",
+                        column: x => x.BookId,
+                        principalTable: "Books",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Libraries_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    BookId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric", nullable: false),
+                    OrderDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Orders_Books_BookId",
+                        column: x => x.BookId,
+                        principalTable: "Books",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Orders_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reviews",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: true),
                     BookId = table.Column<Guid>(type: "uuid", nullable: false),
                     Comment = table.Column<string>(type: "text", nullable: false),
-                    Rating = table.Column<int>(type: "integer", nullable: false)
+                    Rating = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Review", x => x.Id);
+                    table.PrimaryKey("PK_Reviews", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Review_Books_BookId",
+                        name: "FK_Reviews_Books_BookId",
                         column: x => x.BookId,
                         principalTable: "Books",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Review_Users_UserId",
+                        name: "FK_Reviews_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                 });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "Active", "ConcurrencyStamp", "CreatedAt", "Email", "Image", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "Roles", "SecurityStamp", "UserName" },
+                values: new object[] { new Guid("c74ddd14-6340-4840-95c2-db12554843e6"), true, "STATIC_CONCURRENCY_STAMP_FOR_ADMIN", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "mrs@gmail.com", null, "MRS@GMAIL.COM", "MRS", "AQAAAAIAAYagAAAAEDPc+KQMZJSaHGuzbY3AcPieWpoeEb2fur0PLIB+R7qVVx2JmhYy0D3eSyar5l6/2A==", null, 8, "STATIC_SECURITY_STAMP_FOR_ADMIN", "mrs" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Books_CategoryId",
@@ -276,14 +337,36 @@ namespace Libres.API.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Review_BookId",
-                table: "Review",
+                name: "IX_Libraries_BookId",
+                table: "Libraries",
                 column: "BookId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Review_UserId",
-                table: "Review",
+                name: "IX_Libraries_UserId_BookId",
+                table: "Libraries",
+                columns: new[] { "UserId", "BookId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_BookId",
+                table: "Orders",
+                column: "BookId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_UserId",
+                table: "Orders",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_BookId",
+                table: "Reviews",
+                column: "BookId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_UserId_BookId",
+                table: "Reviews",
+                columns: new[] { "UserId", "BookId" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleClaims_RoleId",
@@ -336,7 +419,13 @@ namespace Libres.API.Migrations
                 name: "DataProtectionKeys");
 
             migrationBuilder.DropTable(
-                name: "Review");
+                name: "Libraries");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
+
+            migrationBuilder.DropTable(
+                name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "RoleClaims");

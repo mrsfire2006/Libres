@@ -13,6 +13,7 @@ namespace Libres.API.Features.Books.Domain.Entities
         public Guid BookId { get; private set; } = default!;
         public string Comment { get; private set; } = default!;
         public int Rating { get; private set; }
+        public DateTime CreatedAt { get; private set; }
         protected Review() : base(Guid.Empty)
         {
         }
@@ -22,13 +23,14 @@ namespace Libres.API.Features.Books.Domain.Entities
             BookId = bookId;
             Comment = comment;
             Rating = rating;
+            CreatedAt = DateTime.UtcNow;
         }
 
         public static Result<Review> Create(Guid userId, Guid bookId, string comment, int rating = 0)
         {
             if (string.IsNullOrWhiteSpace(comment))
             {
-                return Result<Review>.Failure(Error.Validation("Comment is required"));
+                return Result<Review>.Failure("Comment is required");
             }
 
             return Result<Review>.Success(new Review(Guid.NewGuid(), userId, bookId, comment, rating));
@@ -38,7 +40,7 @@ namespace Libres.API.Features.Books.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(comment))
             {
-                return Result<string>.Failure(Error.Validation("Comment is required"));
+                return Result<string>.Failure("Comment is required");
 
             }
 
@@ -51,7 +53,7 @@ namespace Libres.API.Features.Books.Domain.Entities
         {
             if (rating <= 0)
             {
-                return Result<string>.Failure(Error.Validation("Rating is required"));
+                return Result<string>.Failure("Rating is required");
 
             }
 

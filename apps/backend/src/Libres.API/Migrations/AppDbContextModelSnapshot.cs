@@ -80,6 +80,9 @@ namespace Libres.API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("Rating")
                         .HasColumnType("integer");
 
@@ -90,9 +93,10 @@ namespace Libres.API.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "BookId")
+                        .IsUnique();
 
-                    b.ToTable("Review");
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Libres.API.Features.Categories.Domain.Category", b =>
@@ -111,6 +115,64 @@ namespace Libres.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("Libres.API.Features.Orders.Domain.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BookId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Libres.API.Features.UserLibrary.Domain.Library", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BookId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("GrantedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsBlocked")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId", "BookId")
+                        .IsUnique();
+
+                    b.ToTable("Libraries");
                 });
 
             modelBuilder.Entity("Libres.API.Features.Users.Domain.User", b =>
@@ -169,6 +231,22 @@ namespace Libres.API.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("Users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("c74ddd14-6340-4840-95c2-db12554843e6"),
+                            Active = true,
+                            ConcurrencyStamp = "STATIC_CONCURRENCY_STAMP_FOR_ADMIN",
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "mrs@gmail.com",
+                            NormalizedEmail = "MRS@GMAIL.COM",
+                            NormalizedUserName = "MRS",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDPc+KQMZJSaHGuzbY3AcPieWpoeEb2fur0PLIB+R7qVVx2JmhYy0D3eSyar5l6/2A==",
+                            Roles = 8,
+                            SecurityStamp = "STATIC_SECURITY_STAMP_FOR_ADMIN",
+                            UserName = "mrs"
+                        });
                 });
 
             modelBuilder.Entity("Libres.API.Features.Wallet.Domain.Wallet", b =>
@@ -379,6 +457,36 @@ namespace Libres.API.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("Libres.API.Features.Orders.Domain.Order", b =>
+                {
+                    b.HasOne("Libres.API.Features.Books.Domain.Book", null)
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Libres.API.Features.Users.Domain.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Libres.API.Features.UserLibrary.Domain.Library", b =>
+                {
+                    b.HasOne("Libres.API.Features.Books.Domain.Book", null)
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Libres.API.Features.Users.Domain.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Libres.API.Features.Wallet.Domain.Wallet", b =>

@@ -30,7 +30,18 @@ namespace Libres.API.Features.Users.Application.Commands.UpdatePassword
             var user = await _userManager.FindByIdAsync(request.UserId.ToString());
             if (user == null)
             {
-                return Result<string>.Failure(Error.NotFound("User not found"));
+                return new ResultBuilder<string>().WithFailure("User not found").Build();
+
+            }
+            var verificationResult = _userManager.PasswordHasher.VerifyHashedPassword(
+                user,
+                user.PasswordHash!,
+                request.NewPassword
+            );
+
+            if (verificationResult == PasswordVerificationResult.Success)
+            {
+                return new ResultBuilder<string>().WithFailure("password is already same").Build();
             }
 
             var changePasswordResult = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
@@ -38,13 +49,15 @@ namespace Libres.API.Features.Users.Application.Commands.UpdatePassword
             if (!changePasswordResult.Succeeded)
             {
                 var firstError = changePasswordResult.Errors.FirstOrDefault()?.Description ?? "Failed to change password";
-                
-                return Result<string>.Failure(Error.Validation(firstError));
+
+                return new ResultBuilder<string>().WithFailure(firstError).Build();
+
             }
 
             await _signInManager.RefreshSignInAsync(user);
 
-            return Result<string>.Success("Password updated");
+            return new ResultBuilder<string>().WithSuccess("Password updated").Build();
+
         }
     }
 }

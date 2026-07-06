@@ -22,11 +22,13 @@ namespace Libres.API.Features.Books.Application.Commands.Delete
             var book = await _context.Books.FirstOrDefaultAsync(x => x.Id == request.BookId);
             if (book == null)
             {
-                return Result<string>.Failure(Error.NotFound("Book Not Found"));
+                return new ResultBuilder<string>().WithFailure("Book Not Found").Build();
+
             }
             if (book.BookStatus != BookStatus.Rejected)
             {
-                return Result<string>.Failure(Error.Conflict("The book is currently under review or Accepted."));
+                return new ResultBuilder<string>().WithFailure("The book is currently under review or Accepted.").Build();
+
 
             }
 
@@ -34,8 +36,8 @@ namespace Libres.API.Features.Books.Application.Commands.Delete
             DeleteIfExists(book.FilePath, book.CoverImagePath);
             _context.Books.Remove(book);
             await _context.SaveChangesAsync(cancellationToken);
+            return new ResultBuilder<string>().WithSuccess("Book removed").Build();
 
-            return Result<string>.Success("Book removed");
 
 
         }

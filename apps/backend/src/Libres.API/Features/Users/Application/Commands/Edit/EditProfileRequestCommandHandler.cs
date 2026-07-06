@@ -32,30 +32,32 @@ namespace Libres.API.Features.Users.Application.Commands.Edit
         {
             if (string.IsNullOrWhiteSpace(request.username))
             {
-                return Result<string>.Failure(Error.Validation("Username cannot be empty."));
+                return new ResultBuilder<string>().WithFailure("Username cannot be empty.").Build();
+
             }
 
             var user = await _usermanager.FindByIdAsync(request.UserId.ToString());
             if (user == null)
             {
-                return Result<string>.Failure(Error.NotFound("User not found"));
+                return new ResultBuilder<string>().WithFailure("User not found").Build();
+
             }
 
             var usernameResult = user.UpdateUsername(request.username);
             if (usernameResult.IsFailure)
             {
-                return Result<string>.Failure(usernameResult.Error);
+                return new ResultBuilder<string>().WithFailure(usernameResult.ErrorMessage).Build();
+
             }
 
             var oldImagePath = user.Image;
             string? newImagePath = null;
-            bool shouldDeleteOldImageFile = false;  
+            bool shouldDeleteOldImageFile = false;
 
             await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
             try
             {
-                // الحالة 1: رفع صورة جديدة
                 if (request.image is not null)
                 {
                     newImagePath = await SaveImageAsync(request.image, "images");
@@ -64,7 +66,7 @@ namespace Libres.API.Features.Users.Application.Commands.Edit
                 }
                 else if (request.deleteCurrentImage)
                 {
-                    user.UpdateImage(null); // أو القيمة الافتراضية التي يقبلها الـ Domain الخاص بك
+                    user.UpdateImage(null);
                     shouldDeleteOldImageFile = !string.IsNullOrWhiteSpace(oldImagePath);
                 }
 
@@ -76,7 +78,8 @@ namespace Libres.API.Features.Users.Application.Commands.Edit
                     DeleteFileIfExists(newImagePath);
 
                     var firstError = identityResult.Errors.First();
-                    return Result<string>.Failure(Error.Conflict(firstError.Description));
+                    return new ResultBuilder<string>().WithFailure(firstError.Description).Build();
+
                 }
 
                 await transaction.CommitAsync(cancellationToken);
@@ -88,7 +91,8 @@ namespace Libres.API.Features.Users.Application.Commands.Edit
 
                 await _signInManager.RefreshSignInAsync(user);
 
-                return Result<string>.Success("Edited");
+                return new ResultBuilder<string>().WithSuccess("Edited").Build();
+
             }
             catch (DbUpdateException ex)
             {
@@ -98,16 +102,18 @@ namespace Libres.API.Features.Users.Application.Commands.Edit
                 if (ex.InnerException != null &&
                    (ex.InnerException.Message.Contains("Duplicate") || ex.InnerException.Message.Contains("unique constraint")))
                 {
-                    return Result<string>.Failure(Error.Validation("Username is already used"));
-                }
+                    return new ResultBuilder<string>().WithFailure("Username is already used").Build();
 
-                return Result<string>.Failure(Error.Conflict("Database update error."));
+                }
+                return new ResultBuilder<string>().WithFailure("Database update error.").Build();
+
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync(cancellationToken);
                 DeleteFileIfExists(newImagePath);
-                return Result<string>.Failure(Error.Conflict($"حدث خطأ غير متوقع: {ex.Message}"));
+                return new ResultBuilder<string>().WithFailure($"unexpected error : {ex.Message}").Build();
+
             }
         }
 

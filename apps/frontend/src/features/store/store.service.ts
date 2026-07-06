@@ -5,8 +5,11 @@ import type {
   ResultAllCategories,
   ResultOfBookResponse,
   ResultOfListBookResponse,
+  ReviewRequestCommand,
+  ReviewResponse,
 } from "./type";
 import { APISTOREROUTES } from "./paths";
+import type { Result } from "@/schemas/api-schema";
 
 export const storeService = {
   getCategories: async (signal?: AbortSignal) => {
@@ -36,12 +39,25 @@ export const storeService = {
     );
     return result;
   },
-  getBookById: async (bookByIdRequestQuery: BookByIdRequestQuery) => {
+  getBookById: async (query: BookByIdRequestQuery) => {
+    const searchParams = new URLSearchParams();
+    if (query?.BookId) searchParams.set("BookId", query.BookId);
+
     const result: ResultOfBookResponse = await clientFetch(
-      `${APISTOREROUTES.BOOKBYID}`,
+      `${APISTOREROUTES.BOOKBYID}?${searchParams.toString()}`,
       {
         method: "GET",
-        body: JSON.stringify(bookByIdRequestQuery),
+      },
+    );
+
+    return result;
+  },
+  addReview: async (command: ReviewRequestCommand) => {
+    const result: Result<ReviewResponse> = await clientFetch(
+      `${APISTOREROUTES.ADDREVIEW}`,
+      {
+        method: "POST",
+        body: JSON.stringify(command),
       },
     );
 

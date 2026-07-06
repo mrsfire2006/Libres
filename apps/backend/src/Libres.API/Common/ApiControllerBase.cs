@@ -17,20 +17,24 @@ namespace Libres.API.Common
             {
                 return Ok(result);
             }
-            var statusCode = result.Error.Type switch
+
+
+            var errorResponse = Result<object>.Failure(result.ErrorMessage, result.StatusCode);
+
+            return StatusCode((int)result.StatusCode, errorResponse);
+
+        }
+        protected IActionResult HandleResult(Result result)
+        {
+            if (result.IsSuccess)
             {
-                ErrorType.NotFound => HttpStatusCode.NotFound,         // 404
-                ErrorType.Unauthorized => HttpStatusCode.Unauthorized, // 401
-                ErrorType.Conflict => HttpStatusCode.Conflict,         // 409
+                return Ok(result);
+            }
 
-                ErrorType.Forbidden => HttpStatusCode.Forbidden,
 
-                ErrorType.Validation => HttpStatusCode.BadRequest,     // 400
-                _ => HttpStatusCode.BadRequest                         // 400
-            };
+            var errorResponse = Result.Failure(result.ErrorMessage, result.StatusCode);
 
-            var errorResponse = Result<object>.Failure(result.Error);
-            return StatusCode((int)statusCode, errorResponse);
+            return StatusCode((int)result.StatusCode, errorResponse);
 
         }
     }

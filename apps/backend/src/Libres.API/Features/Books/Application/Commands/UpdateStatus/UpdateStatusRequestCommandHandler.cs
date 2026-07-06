@@ -24,19 +24,22 @@ namespace Libres.API.Features.Books.Application.Commands.UpdateStatus
 
             if (book == null)
             {
-                return Result<string>.Failure(Error.NotFound("Book Not Found"));
+                return new ResultBuilder<string>().WithFailure("Book Not Found").Build();
+
             }
 
             if (book.BookStatus == request.BookStatus)
             {
-                return Result<string>.Success($"Book Is Already {request.BookStatus.ToString()}");
+                return new ResultBuilder<string>().WithFailure($"Book Is Already {request.BookStatus.ToString()}").Build();
+
             }
 
             book.UpdateStatus(request.BookStatus);
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return Result<string>.Success("Book Updated");
+            return new ResultBuilder<string>().WithFailure("Book Updated").Build();
+
         }
     }
 }

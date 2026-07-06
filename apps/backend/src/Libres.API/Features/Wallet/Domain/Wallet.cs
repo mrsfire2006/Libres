@@ -39,7 +39,7 @@ namespace Libres.API.Features.Wallet.Domain
 
             if (userId == Guid.Empty)
             {
-                return Result<Wallet>.Failure(Error.Validation("User Id Cannot be empty"));
+                return Result<Wallet>.Failure("User Id Cannot be empty");
             }
             return Result<Wallet>.Success(new Wallet(Guid.NewGuid(), userId));
         }
@@ -62,13 +62,19 @@ namespace Libres.API.Features.Wallet.Domain
             Balance += amount;
         }
 
-        public void Debit(decimal amount)
+        public Result Debit(decimal amount)
         {
             // if (this.Balance < amount)
             // {
             //     throw new DomainException($"your balance is less than {amount}");
             // }
+            if (amount > this.Balance)
+            {
+                return Result.Failure($"your balance is less than {amount}");
+            }
             Balance -= amount;
+
+            return Result.Success();
         }
     }
 }

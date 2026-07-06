@@ -25,7 +25,7 @@ export function LoginForm() {
     const result = await login(formData);
 
     if (result?.isFailure) {
-      setError(result.error?.message!);
+      setError(result.errorMessage!);
     }
     else {
       navigate(HOMEROUTES.INDEX)

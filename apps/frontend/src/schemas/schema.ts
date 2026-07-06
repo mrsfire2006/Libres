@@ -243,6 +243,7 @@ export interface paths {
             parameters: {
                 query?: {
                     BookId?: string;
+                    UserId?: string;
                 };
                 header?: never;
                 path?: never;
@@ -301,9 +302,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ResultOfReviewResponse"];
-                        "application/json": components["schemas"]["ResultOfReviewResponse"];
-                        "text/json": components["schemas"]["ResultOfReviewResponse"];
+                        "text/plain": components["schemas"]["Result"];
+                        "application/json": components["schemas"]["Result"];
+                        "text/json": components["schemas"]["Result"];
                     };
                 };
             };
@@ -427,6 +428,92 @@ export interface paths {
                         "text/plain": components["schemas"]["ResultOfCategoryResponse"];
                         "application/json": components["schemas"]["ResultOfCategoryResponse"];
                         "text/json": components["schemas"]["ResultOfCategoryResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/order/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateOrderRequestCommand"];
+                    "text/json": components["schemas"]["CreateOrderRequestCommand"];
+                    "application/*+json": components["schemas"]["CreateOrderRequestCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ResultOfOrderResponse"];
+                        "application/json": components["schemas"]["ResultOfOrderResponse"];
+                        "text/json": components["schemas"]["ResultOfOrderResponse"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/order/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ApproveOrderCommand"];
+                    "text/json": components["schemas"]["ApproveOrderCommand"];
+                    "application/*+json": components["schemas"]["ApproveOrderCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Result"];
+                        "application/json": components["schemas"]["Result"];
+                        "text/json": components["schemas"]["Result"];
                     };
                 };
             };
@@ -691,6 +778,10 @@ export interface components {
             name: string;
             description: null | string;
         };
+        ApproveOrderCommand: {
+            /** Format: uuid */
+            orderId: string;
+        };
         BookResponse: {
             /** Format: uuid */
             id: string;
@@ -711,6 +802,15 @@ export interface components {
             createdAt: string;
             coverImageUrl: null | string;
             fileUrl: null | string;
+            reviews: null | components["schemas"]["ReviewResponse"][];
+            /** Format: double */
+            averageRate: number | string;
+            /** Format: int32 */
+            pageCount: number | string;
+            /** Format: int64 */
+            fileSizeInBytes: number | string;
+            /** @default false */
+            hasUserReviewed: boolean;
         };
         /** @enum {unknown} */
         BookStatus: "Accepted" | "Rejected" | "Pending";
@@ -735,6 +835,10 @@ export interface components {
             name: string;
             description?: null | string;
         };
+        CreateOrderRequestCommand: {
+            /** Format: uuid */
+            bookId: string;
+        };
         CreateReviewRequestCommand: {
             /** Format: uuid */
             bookId: string;
@@ -750,17 +854,18 @@ export interface components {
             newName: string;
             newDescription: null | string;
         };
-        Error: {
-            message: string;
-            type: components["schemas"]["ErrorType"];
-        };
-        ErrorType: number;
         /** Format: binary */
         IFormFile: string;
         LoginRequestCommand: {
             email: string;
             password: string;
         };
+        OrderResponse: {
+            /** Format: uuid */
+            orderId: string;
+            status: components["schemas"]["OrderStatus"];
+        };
+        OrderStatus: number;
         RegisterRequestCommand: {
             username: string;
             email: string;
@@ -768,53 +873,76 @@ export interface components {
             phoneNumber: null | string;
             roles?: components["schemas"]["UserRoles"];
         };
-        ResultOfBookResponse: {
+        Result: {
             isSuccess?: boolean;
             isFailure?: boolean;
+            errorMessage?: string;
+            /** Format: int32 */
+            statusCode?: number | string;
+        };
+        ResultOfBookResponse: {
             value?: components["schemas"]["BookResponse"];
-            error?: components["schemas"]["Error"];
+            isSuccess?: boolean;
+            isFailure?: boolean;
+            errorMessage?: string;
+            /** Format: int32 */
+            statusCode?: number | string;
         };
         ResultOfCategoryResponse: {
+            value?: components["schemas"]["CategoryResponse"];
             isSuccess?: boolean;
             isFailure?: boolean;
-            value?: components["schemas"]["CategoryResponse"];
-            error?: components["schemas"]["Error"];
+            errorMessage?: string;
+            /** Format: int32 */
+            statusCode?: number | string;
         };
         ResultOfIEnumerableOfBookSummaryResponse: {
+            value?: null | components["schemas"]["BookSummaryResponse"][];
             isSuccess?: boolean;
             isFailure?: boolean;
-            value?: null | components["schemas"]["BookSummaryResponse"][];
-            error?: components["schemas"]["Error"];
+            errorMessage?: string;
+            /** Format: int32 */
+            statusCode?: number | string;
         };
         ResultOfIEnumerableOfCategoryResponse: {
-            isSuccess?: boolean;
-            isFailure?: boolean;
             value?: null | components["schemas"]["CategoryResponse"][];
-            error?: components["schemas"]["Error"];
-        };
-        ResultOfReviewResponse: {
             isSuccess?: boolean;
             isFailure?: boolean;
-            value?: components["schemas"]["ReviewResponse"];
-            error?: components["schemas"]["Error"];
+            errorMessage?: string;
+            /** Format: int32 */
+            statusCode?: number | string;
+        };
+        ResultOfOrderResponse: {
+            value?: components["schemas"]["OrderResponse"];
+            isSuccess?: boolean;
+            isFailure?: boolean;
+            errorMessage?: string;
+            /** Format: int32 */
+            statusCode?: number | string;
         };
         ResultOfSigninResponse: {
+            value?: components["schemas"]["SigninResponse"];
             isSuccess?: boolean;
             isFailure?: boolean;
-            value?: components["schemas"]["SigninResponse"];
-            error?: components["schemas"]["Error"];
+            errorMessage?: string;
+            /** Format: int32 */
+            statusCode?: number | string;
         };
         ResultOfstring: {
+            value?: null | string;
             isSuccess?: boolean;
             isFailure?: boolean;
-            value?: null | string;
-            error?: components["schemas"]["Error"];
+            errorMessage?: string;
+            /** Format: int32 */
+            statusCode?: number | string;
         };
         ResultOfUserProfileResponse: {
+            value?: components["schemas"]["UserProfileResponse"];
             isSuccess?: boolean;
             isFailure?: boolean;
-            value?: components["schemas"]["UserProfileResponse"];
-            error?: components["schemas"]["Error"];
+            errorMessage?: string;
+            /** Format: int32 */
+            statusCode?: number | string;
         };
         ReviewResponse: {
             /** Format: uuid */
@@ -822,6 +950,10 @@ export interface components {
             comment: string;
             /** Format: int32 */
             rating: number | string;
+            username: string;
+            image: null | string;
+            /** Format: date-time */
+            createdAt: string;
         };
         SigninResponse: {
             /** Format: uuid */

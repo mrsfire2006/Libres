@@ -77,7 +77,7 @@ export function EditProfileCard({ username, image }: EditProfileCardProps) {
             });
 
             if (result.isFailure) {
-                setError(result.error?.message!);
+                setError(result.errorMessage!);
                 return;
             }
             setIsEditing(false);

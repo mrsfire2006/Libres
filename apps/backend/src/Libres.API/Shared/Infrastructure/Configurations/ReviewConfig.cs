@@ -18,7 +18,8 @@ namespace Libres.API.Shared.Infrastructure.Configurations
             builder.Property(x => x.Id).ValueGeneratedNever();
 
 
-
+            builder.HasIndex(x => new { x.UserId, x.BookId })
+                       .IsUnique();
             builder.HasOne<Book>()
                        .WithMany(b => b.Reviews)
                        .HasForeignKey(r => r.BookId)

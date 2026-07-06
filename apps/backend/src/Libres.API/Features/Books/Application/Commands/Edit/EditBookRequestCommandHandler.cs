@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Libres.API.Common;
 using Libres.API.Data.Persistence;
 using Libres.API.Features.Books.Application.Common;
+using Libres.API.Features.Books.Application.Extensions;
 using Libres.API.Shared.Application.CustomError;
 using Libres.API.Shared.Application.Mediator;
 using Libres.API.Shared.Application.Services;
@@ -32,17 +33,28 @@ namespace Libres.API.Features.Books.Application.Commands.Edit
             var book = await _context.Books.FirstOrDefaultAsync(x => x.Id == request.BookId);
             if (book == null)
             {
-                return Result<BookResponse>.Failure(Error.NotFound("Book Not Found"));
+                return new ResultBuilder<BookResponse>().WithFailure("Book Not Found").Build();
+
             }
             var resultName = book.ChangeName(request.Title);
             var resultDescription = book.ChangeDescription(request.Description);
             if (resultName.IsFailure)
             {
-                return Result<BookResponse>.Failure(resultName.Error);
+                return new ResultBuilder<BookResponse>().WithFailure(resultName.ErrorMessage).Build();
+
 
             }
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            long fileSizeInBytes = 0;
+            int pagesCount = 0;
+            if (book.FilePath != null)
+            {
+                pagesCount = BookExtenstions.GetPdfPageCount(book.FilePath);
+                fileSizeInBytes = BookExtenstions.GetPdfSize(book.FilePath);
+
+            }
 
 
             var bookResponse = await _context.Books.AsNoTracking()
@@ -60,10 +72,16 @@ namespace Libres.API.Features.Books.Application.Commands.Edit
                  book.Description,
                  book.CreatedAt,
                  book.CoverImagePath != null ? $"{_fileService.GetBaseUrl()}/{book.CoverImagePath}" : null,
-                 book.FilePath != null ? $"{_fileService.GetBaseUrl()}/{book.FilePath}" : null
+                 book.FilePath != null ? $"{_fileService.GetBaseUrl()}/{book.FilePath}" : null,
+                null,
+                book.AverageRate,
+                pagesCount,
+                fileSizeInBytes
             )).FirstOrDefaultAsync(cancellationToken);
 
-            return Result<BookResponse>.Success(bookResponse);
+
+            return new ResultBuilder<BookResponse>().WithSuccess(bookResponse).Build();
+
         }
     }
 }

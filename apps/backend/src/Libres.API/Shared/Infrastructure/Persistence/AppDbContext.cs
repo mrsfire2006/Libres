@@ -1,6 +1,9 @@
 
 using Libres.API.Features.Books.Domain;
+using Libres.API.Features.Books.Domain.Entities;
 using Libres.API.Features.Categories.Domain;
+using Libres.API.Features.Orders.Domain;
+using Libres.API.Features.UserLibrary.Domain;
 using Libres.API.Features.Users.Domain;
 using Libres.API.Features.Wallet.Domain;
 using Libres.API.Shared.Infrastructure.Configurations;
@@ -23,6 +26,9 @@ namespace Libres.API.Data.Persistence
         public DbSet<Wallet> Wallets { get; set; } = null!;
 
         public DbSet<Book> Books { get; set; } = null!;
+        public DbSet<Review> Reviews { get; set; } = null!;
+        public DbSet<Order> Orders { get; set; } = null!;
+        public DbSet<Library> Libraries { get; set; } = null!;
 
         public DbSet<DataProtectionKey> DataProtectionKeys { get; set; } = null!;
 

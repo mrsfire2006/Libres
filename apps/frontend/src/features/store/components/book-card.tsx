@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Star } from "lucide-react"
 import { Link } from "react-router-dom"
- import { STOREROUTES } from "../paths"
+import { STOREROUTES } from "../paths"
 import type { BookSummaryResponse } from "../type"
 
 function BookCard({ book }: { book: BookSummaryResponse }) {
@@ -58,9 +58,15 @@ function BookCard({ book }: { book: BookSummaryResponse }) {
                         </div>
 
                         {/* السعر */}
-                        <span className="text-sm font-semibold text-foreground">
-                            ${book?.price}
-                        </span>
+                        {book?.price === 0 ? (
+                            <span className="text-[10px] font-bold tracking-wide uppercase text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
+                                Free
+                            </span>
+                        ) : (
+                            <span className="text-sm font-semibold text-foreground">
+                                ${book?.price}
+                            </span>
+                        )}
                     </div>
                 </div>
 

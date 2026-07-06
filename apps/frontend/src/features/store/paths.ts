@@ -10,4 +10,5 @@ export const APISTOREROUTES = {
   ALLCATEGORIES: "category/categories",
   BOOKS: "book/books",
   BOOKBYID: "book/id",
+  ADDREVIEW: "book/review",
 };
