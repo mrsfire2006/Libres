@@ -1,6 +1,5 @@
 import type {
   EditProfileCommand,
-  ResultOfString,
   ResultOfUserProfile,
   UpdatePasswordCommand,
 } from "./type";
@@ -47,8 +46,8 @@ export const UserService = {
   },
   updatePassword: async (
     updatePassword: UpdatePasswordCommand,
-  ): Promise<ResultOfString> => {
-    const result: ResultOfString = await clientFetch(
+  ): Promise<Result> => {
+    const result: Result = await clientFetch(
       `${USERAPIROUTES.USERUPDATEPASSWORD}`,
       {
         method: "PUT",

@@ -1,7 +1,6 @@
-import { Plus, BookOpen } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { useGetAuthorBooks } from "../author.hook";
 import { useGetUserProfileQuery } from "@/features/user/user.hook";
-import { useState } from "react";
 import { BookCardEdit } from "./book-card-edit";
 import type { AuthorBookResponse, BookStatus } from "../type";
 
@@ -14,25 +13,25 @@ interface BookGridProps {
 export function BookGrid({ onEdit }: BookGridProps) {
   const { data: user } = useGetUserProfileQuery();
   const { data: books } = useGetAuthorBooks(user?.value?.userId ?? "");
-  const [filter, setFilter] = useState<FilterKey>("all");
+  // const [filter, setFilter] = useState<FilterKey>("all");
 
-  const filtered = books?.value?.filter((b) => {
-    const matchesFilter = filter === "all" || b.bookStatus === filter;
-    return matchesFilter;
-  });
+  // const filtered = books?.value?.filter((b) => {
+  // const matchesFilter = filter === "all" || b.bookStatus === filter;
+  // return matchesFilter;
+  // });
 
   return (
     <>
       <div className="mb-6 flex flex-col gap-3 sm:flex-row">
       </div>
 
-      {filtered && filtered.length > 0 ? (
+      {books && books?.value!.length > 0 ? (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((b) => (
+          {books.value?.map((b) => (
             <BookCardEdit
               key={b.id}
               book={b}
-              onEdit={onEdit}   
+              onEdit={onEdit}
             />
           ))}
         </div>

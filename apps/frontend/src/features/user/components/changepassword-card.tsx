@@ -44,7 +44,7 @@ export function ChangePasswordCard() {
                 setMessage({ message: result.errorMessage!, state: "error" });
             }
             else if (result.isSuccess) {
-                setMessage({ message: result.value!, state: "success" });
+                setMessage({ message: "", state: "success" });
             }
         } catch {
             setMessage({
