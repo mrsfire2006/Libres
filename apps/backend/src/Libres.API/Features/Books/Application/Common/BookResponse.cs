@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Libres.API.Features.Books.Domain.Entities;
-
+ 
 namespace Libres.API.Features.Books.Application.Common
 {
     public record BookResponse(
@@ -19,7 +18,6 @@ namespace Libres.API.Features.Books.Application.Common
          string? Description,
          DateTime CreatedAt,
          string? CoverImageUrl,
-         string? FileUrl,
          IEnumerable<ReviewResponse>? Reviews,
          double AverageRate,
          int PageCount,

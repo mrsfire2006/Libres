@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Libres.API.Data.Persistence;
-using Libres.API.Features.Categories.Application.Common;
 using Libres.API.Features.Categories.Domain;
 using Libres.API.Shared.Application.CustomError;
 using Libres.API.Shared.Application.Mediator;
@@ -11,7 +10,7 @@ using Microsoft.OpenApi;
 
 namespace Libres.API.Features.Categories.Application.Commands.Add
 {
-    public class AddCategoryRequestCommandHandler : ICustomRequestHandler<AddCategoryRequestCommand, Result<CategoryResponse>>
+    public class AddCategoryRequestCommandHandler : ICustomRequestHandler<AddCategoryRequestCommand, Result<AddCategoryResponse>>
     {
 
         private readonly AppDbContext _context;
@@ -19,13 +18,13 @@ namespace Libres.API.Features.Categories.Application.Commands.Add
         {
             _context = context;
         }
-        public async Task<Result<CategoryResponse>> HandleAsync(AddCategoryRequestCommand request, CancellationToken cancellationToken)
+        public async Task<Result<AddCategoryResponse>> HandleAsync(AddCategoryRequestCommand request, CancellationToken cancellationToken)
         {
             var categoryResult = Category.Create(request.name, request.description);
 
             if (categoryResult.IsFailure)
             {
-                return new ResultBuilder<CategoryResponse>().WithFailure(categoryResult.ErrorMessage).Build();
+                return new ResultBuilder<AddCategoryResponse>().WithFailure(categoryResult.ErrorMessage).Build();
 
             }
 
@@ -33,7 +32,7 @@ namespace Libres.API.Features.Categories.Application.Commands.Add
             _context.Categories.Add(category);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return new ResultBuilder<CategoryResponse>().WithSuccess(new CategoryResponse(category.Id, category.Name, category.Description)).Build();
+            return new ResultBuilder<AddCategoryResponse>().WithSuccess(new AddCategoryResponse(category.Id, category.Name, category.Description)).Build();
 
         }
     }

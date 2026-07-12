@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Libres.API.Features.Books.Domain.Entities;
 using Libres.API.Features.Users;
 using Libres.API.Features.Users.Domain;
 using Libres.API.Shared.Domain.Enums;

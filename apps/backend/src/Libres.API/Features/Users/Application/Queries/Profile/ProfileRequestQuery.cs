@@ -9,7 +9,7 @@ using Libres.API.Shared.Application.Mediator;
 
 namespace Libres.API.Features.Users.Application.Queries.Profile
 {
-    public record ProfileRequestQuery : ICustomRequest<Result<UserProfileResponse>>
+    public record ProfileRequestQuery : ICustomRequest<Result<ProfileResponse>>
     {
         [JsonIgnore]
         public readonly Guid UserId;

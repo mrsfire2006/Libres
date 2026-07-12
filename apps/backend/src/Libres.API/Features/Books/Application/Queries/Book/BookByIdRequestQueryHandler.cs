@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Libres.API.Data.Persistence;
 using Libres.API.Features.Books.Application.Common;
 using Libres.API.Features.Books.Application.Extensions;
-using Libres.API.Features.Books.Domain.Entities;
 using Libres.API.Shared.Application.CustomError;
 using Libres.API.Shared.Application.Mediator;
 using Libres.API.Shared.Application.Services;
@@ -14,21 +13,23 @@ using UglyToad.PdfPig;
 
 namespace Libres.API.Features.Books.Application.Queries.Book
 {
-    public class BookByIdRequestQueryHandler : ICustomRequestHandler<BookByIdRequestQuery, Result<BookResponse>>
+    public class BookByIdRequestQueryHandler : ICustomRequestHandler<BookByIdRequestQuery, Result<GetBookResponse>>
     {
         private readonly AppDbContext _context;
         private readonly FileService _fileService;
+        private readonly IHostEnvironment _environment;
 
-        public BookByIdRequestQueryHandler(AppDbContext context, FileService fileService)
+        public BookByIdRequestQueryHandler(AppDbContext context, FileService fileService, IHostEnvironment environment)
         {
             _context = context;
             _fileService = fileService;
+            _environment = environment;
         }
-        public async Task<Result<BookResponse>> HandleAsync(BookByIdRequestQuery request, CancellationToken cancellationToken)
+        public async Task<Result<GetBookResponse>> HandleAsync(BookByIdRequestQuery request, CancellationToken cancellationToken)
         {
             var bookData = await (from book in _context.Books.AsNoTracking()
-                                  join user in _context.Users on book.UserId equals user.Id
-                                  join category in _context.Categories on book.CategoryId equals category.Id into categoryGroup
+                                  join user in _context.Users.AsNoTracking() on book.UserId equals user.Id
+                                  join category in _context.Categories.AsNoTracking() on book.CategoryId equals category.Id into categoryGroup
                                   from subCategory in categoryGroup.DefaultIfEmpty()
                                   where book.Id == request.BookId
                                   select new
@@ -45,32 +46,16 @@ namespace Libres.API.Features.Books.Application.Queries.Book
                                       book.Description,
                                       book.CreatedAt,
                                       book.CoverImagePath,
+                                      book.AverageRating,
                                       book.FilePath,
-
-                                      AverageRate = book.Reviews.Any() ? book.Reviews.Average(r => r.Rating) : 0.0,
-
-                                      Reviews = (from r in _context.Reviews
-                                                 join reviewUser in _context.Users on r.UserId equals reviewUser.Id
-                                                 where r.BookId == book.Id
-                                                 orderby r.CreatedAt descending
-                                                 select new ReviewResponse(
-                                                     r.Id,
-                                                     r.Comment,
-                                                     r.Rating,
-                                                     reviewUser.UserName ?? "",
-                                                     reviewUser.Image,
-                                                     r.CreatedAt
-                                                 ))
-                                                 .Take(10)
-                                                 .ToList(), 
-
-                                      HasAlreadyReviewed = book.Reviews.Any(x => x.UserId == request.UserId)
+                                      book.ReviewsCount,
+                                      HasUserReviewed = _context.Reviews.Any(r => r.BookId == book.Id && r.UserId == request.UserId)
                                   })
-                                  .FirstOrDefaultAsync(cancellationToken);
+                       .FirstOrDefaultAsync(cancellationToken);
 
             if (bookData == null)
             {
-                return new ResultBuilder<BookResponse>().WithFailure("Book not found").Build();
+                return new ResultBuilder<GetBookResponse>().WithFailure("Book not found").Build();
             }
 
             var baseUrl = _fileService.GetBaseUrl();
@@ -78,11 +63,11 @@ namespace Libres.API.Features.Books.Application.Queries.Book
             int pagesCount = 0;
             if (bookData.FilePath != null)
             {
-                pagesCount = BookExtenstions.GetPdfPageCount(bookData.FilePath);
-                fileSizeInBytes = BookExtenstions.GetPdfSize(bookData.FilePath);
+                pagesCount = BookExtenstions.GetPdfPageCount(bookData.FilePath, _environment);
+                fileSizeInBytes = BookExtenstions.GetPdfSize(bookData.FilePath, _environment);
             }
 
-            var bookResponse = new BookResponse(
+            var bookResponse = new GetBookResponse(
                 bookData.Id,
                 bookData.Title,
                 bookData.UserName,
@@ -95,15 +80,14 @@ namespace Libres.API.Features.Books.Application.Queries.Book
                 bookData.Description,
                 bookData.CreatedAt,
                 bookData.CoverImagePath != null ? $"{baseUrl}/{bookData.CoverImagePath}" : null,
-                bookData.FilePath != null ? $"{baseUrl}/{bookData.FilePath}" : null,
-                bookData.Reviews,
-                bookData.AverageRate,
+                 bookData.AverageRating,
                 pagesCount,
                 fileSizeInBytes,
-                bookData.HasAlreadyReviewed
+                bookData.ReviewsCount,
+                bookData.HasUserReviewed
             );
 
-            return new ResultBuilder<BookResponse>().WithSuccess(bookResponse).Build();
+            return new ResultBuilder<GetBookResponse>().WithSuccess(bookResponse).Build();
         }
 
 

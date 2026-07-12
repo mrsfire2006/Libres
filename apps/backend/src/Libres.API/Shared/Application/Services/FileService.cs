@@ -34,7 +34,6 @@ namespace Libres.API.Shared.Application.Services
 
                 var host = !string.IsNullOrEmpty(forwardedHost) ? forwardedHost : request.Host.ToString();
                 var scheme = !string.IsNullOrEmpty(forwardedProto) ? forwardedProto : request.Scheme;
-
                 return $"{scheme}://{host}{request.PathBase}";
             }
 
@@ -47,6 +46,26 @@ namespace Libres.API.Shared.Application.Services
         public string GetAbsoluteUrl(string fileName)
         {
             return $"{GetBaseUrl()}/uploads/{fileName}";
+        }
+
+        public async Task<string?> SaveImageAsync(IFormFile file, string folder)
+        {
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var folderPath = Path.Combine("uploads", folder);
+
+            Directory.CreateDirectory(folderPath);
+
+            var fullPath = Path.Combine(folderPath, fileName);
+            await using var stream = new FileStream(fullPath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            return $"{folderPath}/{fileName}";
+        }
+
+        public void DeleteFileIfExists(string? path)
+        {
+            if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+                File.Delete(path);
         }
     }
 }

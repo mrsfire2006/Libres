@@ -30,18 +30,13 @@ namespace Libres.API.Controllers
 
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequestCommand request, CancellationToken cancellationToken)
         {
-            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-            if (!Guid.TryParse(userId, out Guid UserId))
+            if (EnsureAuthenticatedUser(out var userId) is IActionResult error)
             {
-                HandleResult(new ResultBuilder().WithFailure("User not found").Build());
-
+                return error;
             }
-            request.UserId = UserId;
 
-
-            var result = await _mediator.SendAsync(request, cancellationToken);
-
+            request.UserId = userId;
+            var result = await _mediator.SendAsync<CreateOrderRequestCommand, Result<OrderResponse>>(request, null, cancellationToken);
             return HandleResult(result);
         }
 
@@ -52,7 +47,7 @@ namespace Libres.API.Controllers
         public async Task<IActionResult> ApproveOrder([FromBody] ApproveOrderCommand request, CancellationToken cancellationToken)
         {
 
-            var result = await _mediator.SendAsync(request, cancellationToken);
+            var result = await _mediator.SendAsync<ApproveOrderCommand, Result>(request,null, cancellationToken);
 
             return HandleResult(result);
         }

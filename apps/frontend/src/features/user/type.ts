@@ -1,7 +1,7 @@
 import type { ApiSchemas } from "@/schemas/api-schema";
 import type { paths } from "@/schemas/schema";
 
-export type ResultOfUserProfile = ApiSchemas["ResultOfUserProfileResponse"];
+export type ResultOfUserProfile = ApiSchemas["ResultOfProfileResponse"];
 
 type GeneratedEditProfileRequest =
   paths["/api/user/edit"]["put"]["requestBody"]["content"]["multipart/form-data"];
@@ -13,8 +13,7 @@ export type EditProfileCommand = Omit<
   username: string;
   image: File | null;
 };
-export type ResultOfString = ApiSchemas["ResultOfstring"]
-
+ 
 export type UpdatePasswordCommand = ApiSchemas["UpdatePasswordRequestCommand"]
 
 export const UserRoles = {

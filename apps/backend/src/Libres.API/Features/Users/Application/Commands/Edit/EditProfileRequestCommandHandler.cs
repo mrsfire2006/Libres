@@ -7,46 +7,50 @@ using Libres.API.Features.Users.Application.Common;
 using Libres.API.Features.Users.Domain;
 using Libres.API.Shared.Application.CustomError;
 using Libres.API.Shared.Application.Mediator;
+using Libres.API.Shared.Application.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Libres.API.Features.Users.Application.Commands.Edit
 {
-    public class EditProfileRequestCommandHandler : ICustomRequestHandler<EditProfileRequestCommand, Result<string>>
+    public class EditProfileRequestCommandHandler : ICustomRequestHandler<EditProfileRequestCommand, Result>
     {
         private readonly AppDbContext _context;
         private readonly UserManager<User> _usermanager;
         private readonly SignInManager<User> _signInManager;
+        private readonly FileService _fileService;
 
         public EditProfileRequestCommandHandler(
             AppDbContext context,
             UserManager<User> usermanager,
-            SignInManager<User> signInManager)
+            SignInManager<User> signInManager,
+            FileService fileService)
         {
             _context = context;
             _usermanager = usermanager;
             _signInManager = signInManager;
+            _fileService = fileService;
         }
 
-        public async Task<Result<string>> HandleAsync(EditProfileRequestCommand request, CancellationToken cancellationToken)
+        public async Task<Result> HandleAsync(EditProfileRequestCommand request, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(request.username))
             {
-                return new ResultBuilder<string>().WithFailure("Username cannot be empty.").Build();
+                return new ResultBuilder().WithFailure("Username cannot be empty.").Build();
 
             }
 
             var user = await _usermanager.FindByIdAsync(request.UserId.ToString());
             if (user == null)
             {
-                return new ResultBuilder<string>().WithFailure("User not found").Build();
+                return new ResultBuilder().WithFailure("User not found").Build();
 
             }
 
             var usernameResult = user.UpdateUsername(request.username);
             if (usernameResult.IsFailure)
             {
-                return new ResultBuilder<string>().WithFailure(usernameResult.ErrorMessage).Build();
+                return new ResultBuilder().WithFailure(usernameResult.ErrorMessage).Build();
 
             }
 
@@ -60,7 +64,7 @@ namespace Libres.API.Features.Users.Application.Commands.Edit
             {
                 if (request.image is not null)
                 {
-                    newImagePath = await SaveImageAsync(request.image, "images");
+                    newImagePath = await _fileService.SaveImageAsync(request.image, "images");
                     user.UpdateImage(newImagePath);
                     shouldDeleteOldImageFile = !string.IsNullOrWhiteSpace(oldImagePath);
                 }
@@ -75,10 +79,10 @@ namespace Libres.API.Features.Users.Application.Commands.Edit
                 if (!identityResult.Succeeded)
                 {
                     await transaction.RollbackAsync(cancellationToken);
-                    DeleteFileIfExists(newImagePath);
+                    _fileService.DeleteFileIfExists(newImagePath);
 
                     var firstError = identityResult.Errors.First();
-                    return new ResultBuilder<string>().WithFailure(firstError.Description).Build();
+                    return new ResultBuilder().WithFailure(firstError.Description).Build();
 
                 }
 
@@ -86,55 +90,37 @@ namespace Libres.API.Features.Users.Application.Commands.Edit
 
                 if (shouldDeleteOldImageFile)
                 {
-                    DeleteFileIfExists(oldImagePath);
+                    _fileService.DeleteFileIfExists(oldImagePath);
                 }
 
                 await _signInManager.RefreshSignInAsync(user);
 
-                return new ResultBuilder<string>().WithSuccess("Edited").Build();
+                return new ResultBuilder().WithSuccess().Build();
 
             }
             catch (DbUpdateException ex)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                DeleteFileIfExists(newImagePath);
+                _fileService.DeleteFileIfExists(newImagePath);
 
                 if (ex.InnerException != null &&
                    (ex.InnerException.Message.Contains("Duplicate") || ex.InnerException.Message.Contains("unique constraint")))
                 {
-                    return new ResultBuilder<string>().WithFailure("Username is already used").Build();
+                    return new ResultBuilder().WithFailure("Username is already used").Build();
 
                 }
-                return new ResultBuilder<string>().WithFailure("Database update error.").Build();
+                return new ResultBuilder().WithFailure("Database update error.").Build();
 
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                DeleteFileIfExists(newImagePath);
-                return new ResultBuilder<string>().WithFailure($"unexpected error : {ex.Message}").Build();
+                _fileService.DeleteFileIfExists(newImagePath);
+                return new ResultBuilder().WithFailure($"unexpected error : {ex.Message}").Build();
 
             }
         }
 
-        private async Task<string?> SaveImageAsync(IFormFile file, string folder)
-        {
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
-            var folderPath = Path.Combine("uploads", folder);
 
-            Directory.CreateDirectory(folderPath);
-
-            var fullPath = Path.Combine(folderPath, fileName);
-            await using var stream = new FileStream(fullPath, FileMode.Create);
-            await file.CopyToAsync(stream);
-
-            return $"{folderPath}/{fileName}";
-        }
-
-        private void DeleteFileIfExists(string? path)
-        {
-            if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
-                File.Delete(path);
-        }
     }
 }

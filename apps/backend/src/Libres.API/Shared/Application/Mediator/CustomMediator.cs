@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Libres.API.Shared.Application.CustomError;
+using Libres.API.Shared.Application.RequestBuilder;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Libres.API.Shared.Application.Mediator
@@ -17,21 +19,24 @@ namespace Libres.API.Shared.Application.Mediator
         public CustomMediator(IServiceProvider serviceProvider) => _serviceProvider = serviceProvider;
 
 
-
-
-        public async Task<TResponse> SendAsync<TResponse>(ICustomRequest<TResponse> request, CancellationToken cancellationToken = default)
+        public async Task<TResponse> SendAsync<TRequest, TResponse>(TRequest request, Action<RequestPipelineBuilder<TRequest, TResponse>>? configurePipeline = null, CancellationToken cancellationToken = default)
+                where TRequest : ICustomRequest<TResponse>  
         {
-            Type requestType = request.GetType();
-            Type handlerType = typeof(ICustomRequestHandler<,>).MakeGenericType(requestType, typeof(TResponse));
-            var handler = _serviceProvider.GetRequiredService(handlerType);
+            Func<Task<TResponse>> coreHandler = async () =>
+                {
+                    var handler = _serviceProvider.GetRequiredService<ICustomRequestHandler<TRequest, TResponse>>();
+                    return await handler.HandleAsync(request, cancellationToken);
+                };
+            var builder = new RequestPipelineBuilder<TRequest, TResponse>();
 
-            if (handler == null)
-                throw new InvalidOperationException($"No handler registered for {requestType.Name}");
+            if (configurePipeline != null)
+            {
+                configurePipeline(builder);
+            }
 
-            var method = handlerType.GetMethod("HandleAsync");
-            return await (Task<TResponse>)method!
-            .Invoke(handler, new object[] { request, cancellationToken })!;
 
+
+            return await builder.ExecuteAsync(request, coreHandler, cancellationToken);
         }
         public async Task PublishAsync(object notification, CancellationToken cancellationToken = default)
         {
@@ -41,13 +46,13 @@ namespace Libres.API.Shared.Application.Mediator
             if (notification is not ICustomNotification)
                 throw new InvalidOperationException($"{notification.GetType().Name} لازم يطبق ICustomNotification.");
 
-            Type notificationType = notification.GetType(); 
+            Type notificationType = notification.GetType();
             Type handlerType = typeof(ICustomNotificationHandler<>).MakeGenericType(notificationType);
 
             var handlers = _serviceProvider.GetServices(handlerType).Where(h => h is not null).ToList();
 
             if (handlers.Count == 0)
-                return; 
+                return;
 
             var method = _handleMethodCache.GetOrAdd(handlerType, t => t.GetMethod("HandleAsync")!);
 

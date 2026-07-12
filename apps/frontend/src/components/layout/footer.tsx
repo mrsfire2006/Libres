@@ -1,3 +1,4 @@
+import { STOREROUTES } from "@/features/store/paths";
 import { BookOpen } from "lucide-react";
 import { FiFacebook, FiInstagram, FiTwitter, FiYoutube } from "react-icons/fi";
 import { Link } from "react-router-dom";
@@ -53,7 +54,7 @@ export default function Footer() {
                         <ul className="space-y-2.5 text-sm text-muted-foreground">
                             {["Fiction", "Non-Fiction", "Mystery", "Romance", "Science Fiction", "Biography"].map(cat => (
                                 <li key={cat}>
-                                    <a href="#" className="hover:text-foreground transition-colors" data-testid={`link-category-${cat.toLowerCase().replace(" ", "-")}`}>{cat}</a>
+                                    <Link to={STOREROUTES.STORE} className="hover:text-foreground transition-colors" data-testid={`link-category-${cat.toLowerCase().replace(" ", "-")}`}>{cat}</Link>
                                 </li>
                             ))}
                         </ul>

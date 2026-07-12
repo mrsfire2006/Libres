@@ -111,7 +111,9 @@ namespace Libres.API.Migrations
                     CoverImagePath = table.Column<string>(type: "text", nullable: true),
                     FilePath = table.Column<string>(type: "text", nullable: true),
                     CategoryId = table.Column<Guid>(type: "uuid", nullable: true),
-                    BookStatus = table.Column<int>(type: "integer", nullable: false)
+                    BookStatus = table.Column<int>(type: "integer", nullable: false),
+                    AverageRating = table.Column<double>(type: "double precision", nullable: false),
+                    ReviewsCount = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -300,7 +302,7 @@ namespace Libres.API.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: true),
                     BookId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Comment = table.Column<string>(type: "text", nullable: false),
+                    Comment = table.Column<string>(type: "text", nullable: true),
                     Rating = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },

@@ -2,11 +2,13 @@ import { clientFetch } from "@/lib/client/api-client";
 import type {
   BookByIdRequestQuery,
   BookRequestQuery,
+  PreviewQuery,
   ResultAllCategories,
   ResultOfBookResponse,
   ResultOfListBookResponse,
-  ReviewRequestCommand,
-  ReviewResponse,
+  CreateReviewRequestCommand,
+  ReviewsQuery,
+  ResultOfIEnumerableOfGetReviewResponse,
 } from "./type";
 import { APISTOREROUTES } from "./paths";
 import type { Result } from "@/schemas/api-schema";
@@ -52,15 +54,39 @@ export const storeService = {
 
     return result;
   },
-  addReview: async (command: ReviewRequestCommand) => {
-    const result: Result<ReviewResponse> = await clientFetch(
-      `${APISTOREROUTES.ADDREVIEW}`,
+  addReview: async (command: CreateReviewRequestCommand) => {
+    const result: Result = await clientFetch(`${APISTOREROUTES.ADDREVIEW}`, {
+      method: "POST",
+      body: JSON.stringify(command),
+    });
+    return result;
+  },
+  getPreview: async (query: PreviewQuery) => {
+    const searchParams = new URLSearchParams();
+    if (query?.BookId) searchParams.set("BookId", query.BookId);
+
+    const result = await clientFetch<Blob>(
+      `${APISTOREROUTES.GETPREVIEW}?${searchParams.toString()}`,
       {
-        method: "POST",
-        body: JSON.stringify(command),
+        method: "GET",
       },
     );
 
+    return result;
+  },
+
+  getReviews: async (query: ReviewsQuery) => {
+    const searchParams = new URLSearchParams();
+    if (query?.BookId) searchParams.set("BookId", query.BookId);
+
+    if (query?.Skip !== undefined) searchParams.set("Skip", String(query.Skip));
+    if (query?.Take !== undefined) searchParams.set("Take", String(query.Take));
+    const result: ResultOfIEnumerableOfGetReviewResponse = await clientFetch(
+      `${APISTOREROUTES.GETREVIEWS}?${searchParams.toString()}`,
+      {
+        method: "GET",
+      },
+    );
     return result;
   },
 };

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Libres.API.Features.Categories.Application.Commands.Edit
 {
-    public class EditCategoryRequestCommandHandler : ICustomRequestHandler<EditCategoryRequestCommand, Result<string>>
+    public class EditCategoryRequestCommandHandler : ICustomRequestHandler<EditCategoryRequestCommand, Result>
     {
 
         private readonly AppDbContext _context;
@@ -17,12 +17,12 @@ namespace Libres.API.Features.Categories.Application.Commands.Edit
         {
             _context = context;
         }
-        public async Task<Result<string>> HandleAsync(EditCategoryRequestCommand request, CancellationToken cancellationToken)
+        public async Task<Result> HandleAsync(EditCategoryRequestCommand request, CancellationToken cancellationToken)
         {
             if (!Guid.TryParse(request.categoryId, out Guid CategoryId))
             {
 
-                return new ResultBuilder<string>().WithSuccess("Id is not valid").Build();
+                return new ResultBuilder().WithFailure("Id is not valid").Build();
 
             }
 
@@ -30,7 +30,7 @@ namespace Libres.API.Features.Categories.Application.Commands.Edit
 
             if (category == null)
             {
-                return new ResultBuilder<string>().WithSuccess("Category not found").Build();
+                return new ResultBuilder().WithFailure("Category not found").Build();
 
             }
 
@@ -46,7 +46,7 @@ namespace Libres.API.Features.Categories.Application.Commands.Edit
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return new ResultBuilder<string>().WithSuccess("Category Changed").Build();
+            return new ResultBuilder().WithSuccess().Build();
 
         }
     }

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Libres.API.Features.Users.Application.Commands.Logout
 {
-    public class LogoutRequestCommandHandler : ICustomRequestHandler<LogoutRequestCommand, Result<string>>
+    public class LogoutRequestCommandHandler : ICustomRequestHandler<LogoutRequestCommand, Result>
     {
 
 
@@ -22,20 +22,20 @@ namespace Libres.API.Features.Users.Application.Commands.Logout
             _userManager = userManager;
             _signInManager = signInManager;
         }
-        public async Task<Result<string>> HandleAsync(LogoutRequestCommand request, CancellationToken cancellationToken)
+        public async Task<Result> HandleAsync(LogoutRequestCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByIdAsync(request.UserId.ToString());
 
             if (user == null)
             {
-                return new ResultBuilder<string>().WithFailure("User not found").Build();
+                return new ResultBuilder().WithFailure("User not found").Build();
 
             }
             await _signInManager.SignOutAsync();
             await _userManager.UpdateSecurityStampAsync(user);
 
 
-            return new ResultBuilder<string>().WithSuccess("logged out").Build();
+            return new ResultBuilder().WithSuccess().Build();
 
         }
     }

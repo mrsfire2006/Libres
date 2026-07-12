@@ -9,16 +9,18 @@ export default function BookDetailsPage() {
     const { id } = useParams<{ id: string }>();
     if (!id) return;
 
-    const { data, isLoading } = useGetBookById({ BookId: id });
+    const { data: book, isLoading } = useGetBookById({ BookId: id });
+
     return (
         <main className="container mx-auto py-10 px-4">
             {isLoading ? (
                 <LoadingCircle />
             ) : (
                 <>
-                    <BookHero book={data?.value} />
-                    <AboutBook bookDescription={data?.value?.description!} />
-                    <Reviews book={data?.value}/>
+                    <BookHero book={book?.value} />
+                    <AboutBook bookDescription={book?.value?.description!} />
+
+                    <Reviews book={book?.value} />
                 </>
             )}
 

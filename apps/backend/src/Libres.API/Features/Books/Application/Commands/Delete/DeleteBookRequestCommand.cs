@@ -7,6 +7,6 @@ using Libres.API.Shared.Application.Mediator;
 
 namespace Libres.API.Features.Books.Application.Commands.Delete
 {
-    public record DeleteBookRequestCommand(Guid BookId) : ICustomRequest<Result<string>>;
+    public record DeleteBookRequestCommand(Guid BookId) : ICustomRequest<Result>;
 
 }

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Libres.API.Common;
 using Libres.API.Features.Categories.Application.Commands.Add;
 using Libres.API.Features.Categories.Application.Commands.Edit;
-using Libres.API.Features.Categories.Application.Common;
 using Libres.API.Features.Categories.Application.Queries.Categories;
 using Libres.API.Shared.Application.CustomError;
 using Libres.API.Shared.Application.Mediator;
@@ -25,30 +24,30 @@ namespace Libres.API.Controllers
         }
 
         [HttpGet("categories")]
-        [ProducesResponseType(typeof(Result<IEnumerable<CategoryResponse>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<IEnumerable<AllCategoryResponse>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllCategories(CancellationToken cancellationToken = default)
         {
-            var request = new CategoriesRequestCommand();
-            var result = await _mediator.SendAsync(request, cancellationToken);
+            var request = new CategoriesRequestQuery();
+            var result = await _mediator.SendAsync<CategoriesRequestQuery, Result<IEnumerable<AllCategoryResponse>>>(request,null, cancellationToken);
 
             return HandleResult(result);
         }
 
         [HttpPut("edit")]
         [Authorize(Roles = $"{nameof(UserRoles.Admin)},{nameof(UserRoles.SuperAdmin)}")]
-        [ProducesResponseType(typeof(Result<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result), StatusCodes.Status200OK)]
         public async Task<IActionResult> EditCategory([FromBody] EditCategoryRequestCommand request, CancellationToken cancellationToken = default)
         {
-            var result = await _mediator.SendAsync(request, cancellationToken);
+            var result = await _mediator.SendAsync<EditCategoryRequestCommand, Result>(request,null, cancellationToken);
 
             return HandleResult(result);
         }
         [HttpPost("add")]
         [Authorize(Roles = $"{nameof(UserRoles.Admin)},{nameof(UserRoles.SuperAdmin)}")]
-        [ProducesResponseType(typeof(Result<CategoryResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Result<AddCategoryResponse>), StatusCodes.Status200OK)]
         public async Task<IActionResult> AddCategory([FromBody] AddCategoryRequestCommand request, CancellationToken cancellationToken = default)
         {
-            var result = await _mediator.SendAsync(request, cancellationToken);
+            var result = await _mediator.SendAsync<AddCategoryRequestCommand, Result<AddCategoryResponse>>(request,null, cancellationToken);
 
             return HandleResult(result);
         }

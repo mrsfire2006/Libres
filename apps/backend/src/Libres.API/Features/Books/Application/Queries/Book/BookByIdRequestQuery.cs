@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Libres.API.Features.Books.Application.Queries.Book
 {
-    public record BookByIdRequestQuery(Guid BookId) : ICustomRequest<Result<BookResponse>>
+    public record BookByIdRequestQuery(Guid BookId) : ICustomRequest<Result<GetBookResponse>>
     {
         [JsonIgnore]
         [BindNever]

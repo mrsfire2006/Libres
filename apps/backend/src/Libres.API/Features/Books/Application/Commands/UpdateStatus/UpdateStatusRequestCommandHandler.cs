@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Libres.API.Features.Books.Application.Commands.UpdateStatus
 {
-    public class UpdateStatusRequestCommandHandler : ICustomRequestHandler<UpdateStatusRequestCommand, Result<string>>
+    public class UpdateStatusRequestCommandHandler : ICustomRequestHandler<UpdateStatusRequestCommand, Result>
     {
 
         private readonly AppDbContext _context;
@@ -18,19 +18,19 @@ namespace Libres.API.Features.Books.Application.Commands.UpdateStatus
         {
             _context = context;
         }
-        public async Task<Result<string>> HandleAsync(UpdateStatusRequestCommand request, CancellationToken cancellationToken)
+        public async Task<Result> HandleAsync(UpdateStatusRequestCommand request, CancellationToken cancellationToken)
         {
             var book = await _context.Books.FirstOrDefaultAsync(x => x.Id == request.BookId);
 
             if (book == null)
             {
-                return new ResultBuilder<string>().WithFailure("Book Not Found").Build();
+                return new ResultBuilder().WithFailure("Book Not Found").Build();
 
             }
 
             if (book.BookStatus == request.BookStatus)
             {
-                return new ResultBuilder<string>().WithFailure($"Book Is Already {request.BookStatus.ToString()}").Build();
+                return new ResultBuilder().WithFailure($"Book Is Already {request.BookStatus.ToString()}").Build();
 
             }
 
@@ -38,7 +38,7 @@ namespace Libres.API.Features.Books.Application.Commands.UpdateStatus
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return new ResultBuilder<string>().WithFailure("Book Updated").Build();
+            return new ResultBuilder().WithFailure("Book Updated").Build();
 
         }
     }

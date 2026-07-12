@@ -5,7 +5,12 @@ using System.Threading.Tasks;
 
 namespace Libres.API.Shared.Application.CustomError
 {
-    public class Result
+    // Curiously Recurring Template Pattern
+    public interface IFailureResult<TSelf> where TSelf : IFailureResult<TSelf>
+    {
+        static abstract TSelf Failure(string errorMessage, int statusCode = 400);
+    }
+    public class Result : IFailureResult<Result>
     {
         public bool IsSuccess { get; }
         public bool IsFailure => !IsSuccess;
@@ -25,7 +30,7 @@ namespace Libres.API.Shared.Application.CustomError
         public static Result Failure(string errorMessage, int statusCode = 400)
             => new(false, errorMessage, statusCode);
     }
-    public class Result<T> : Result
+    public class Result<T> : Result, IFailureResult<Result<T>>
     {
         public T? Value { get; }
 
@@ -38,5 +43,7 @@ namespace Libres.API.Shared.Application.CustomError
         public static Result<T> Success(T? value, int statusCode = 200) => new(true, value, string.Empty, statusCode);
         public new static Result<T> Failure(string errorMessage, int statusCode = 400)
                 => new(false, default, errorMessage, statusCode);
+
+
     }
 }

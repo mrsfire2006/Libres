@@ -11,9 +11,43 @@ import {
 import type { BookResponse } from "../type";
 import { Link } from "react-router-dom";
 import { STOREROUTES } from "../paths";
+import { useGetPreview } from "../store.hook";
+
+function BookPreviewButton({ bookId }: { bookId: string }) {
+    if (!bookId) {
+        return;
+    }
+    const { refetch, isFetching } = useGetPreview({ BookId: bookId });
+
+    const handlePreview = async () => {
+        const { data: blob, error } = await refetch();
+
+        if (error || !blob || blob.isFailure) {
+            return;
+        }
+
+        const objectUrl = URL.createObjectURL(blob.value);
+        window.open(objectUrl, "_blank");
+
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 10_000);
+    };
 
 
+    return (
+        <Button
+            variant="outline"
+            className="flex-1 border border-input bg-background hover:bg-accent hover:text-accent-foreground font-semibold text-base py-3 rounded-xl transition-all active:scale-[0.98]"
+            disabled={isFetching}
+            onClick={handlePreview}
+            data-testid="button-read-preview"
+        >
+            {isFetching ? "جاري التحميل..." : "Read Preview"}
+        </Button>
+    );
+}
 export function BookHero({ book }: { book: BookResponse }) {
+
+ 
 
     return (
         <section className="container mx-auto px-4 py-8 max-w-4xl bg-background text-foreground">
@@ -29,6 +63,7 @@ export function BookHero({ book }: { book: BookResponse }) {
             <div className="flex flex-col md:flex-row gap-8 mb-12">
                 {/* Cover */}
                 <div className="shrink-0 mx-auto md:mx-0 "
+
                 >
                     <div className={`w-60 md:w-75 aspect-2/3 rounded-xl shadow-xl relative overflow-hidden bg-zinc-900`}>
                         {book?.coverImageUrl && (
@@ -58,8 +93,7 @@ export function BookHero({ book }: { book: BookResponse }) {
                             <span className="font-bold text-lg">{book?.averageRate}</span>
                             <Star className="h-5 w-5 fill-primary text-primary" />
                         </div>
-                        <div className="w-1 h-1 rounded-full bg-muted-foreground/50" />
-                        <span className="text-muted-foreground">{book?.reviews?.length || 0} reviews</span>
+                        <span className="text-muted-foreground">{book?.reviewCount ?? 0} reviews</span>
                         <div className="w-1 h-1 rounded-full bg-muted-foreground/50" />
                         <span className="text-muted-foreground">{book?.bookStatus}</span>
                     </div>
@@ -83,14 +117,8 @@ export function BookHero({ book }: { book: BookResponse }) {
                         >
                             {book?.price === 0 ? "Dowload" : "Buy Now"}
                         </Button>
-                        <Button
-                            variant="outline"
-                            className="flex-1 border border-input bg-background hover:bg-accent hover:text-accent-foreground font-semibold text-base py-3 rounded-xl transition-all active:scale-[0.98]"
-                            // onClick={() => navigate(`/read/${book.id}`)}
-                            data-testid="button-read-preview"
-                        >
-                            Read Preview
-                        </Button>
+
+                        <BookPreviewButton bookId={book?.id ?? ""} />
                     </div>
 
                     {/* Feature Grid */}

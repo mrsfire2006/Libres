@@ -10,6 +10,7 @@ interface Props {
 export function ProtectedRoute({ allowedRoles }: Props) {
     const location = useLocation();
     const { data: result, isLoading, isFetching } = useGetUserProfileQuery();
+
     if (isLoading || (isFetching && !result?.value)) {
         return <LoadingCircle />;
     }

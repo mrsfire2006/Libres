@@ -17,7 +17,7 @@ namespace Libres.API.Features.Books.Application.Commands.Create
         decimal Price,
         IFormFile? CoverImage,
         IFormFile? File
-    ) : ICustomRequest<Result<BookResponse>>
+    ) : ICustomRequest<Result<CreateBookResponse>>
     {
         [JsonIgnore]
         [BindNever]

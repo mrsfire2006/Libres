@@ -12,8 +12,7 @@ using Libres.API.Features.Books.Application.Common;
 using Libres.API.Features.Books.Application.Queries.Books;
 using Libres.API.Features.Categories.Application.Commands.Add;
 using Libres.API.Features.Categories.Application.Commands.Edit;
-using Libres.API.Features.Categories.Application.Common;
-using Libres.API.Features.Users.Application.Commands.Login;
+ using Libres.API.Features.Users.Application.Commands.Login;
 using Libres.API.Features.Users.Application.Commands.Register;
 using Libres.API.Features.Users.Application.Common;
 using Libres.API.Shared.Application.CustomError;
@@ -25,11 +24,8 @@ namespace Libres.API.Common
     [JsonSerializable(typeof(Result<IEnumerable<BookResponse>>))]
 
     [JsonSerializable(typeof(Result<SigninResponse>))]
-    [JsonSerializable(typeof(Result<UserProfileResponse>))]
-
-    [JsonSerializable(typeof(Result<IEnumerable<CategoryResponse>>))]
-    [JsonSerializable(typeof(Result<CategoryResponse>))]
-    [JsonSerializable(typeof(Result<string>))]
+ 
+     [JsonSerializable(typeof(Result<string>))]
     [JsonSerializable(typeof(Result<BookResponse>))]
     [JsonSerializable(typeof(Result<IEnumerable<BookResponse>>))]
     [JsonSerializable(typeof(RegisterRequestCommand))]

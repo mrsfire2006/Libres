@@ -6,6 +6,7 @@ export const useGetUserProfileQuery = () => {
   return useQuery({
     queryKey: [QUERIESKEY.USER_PROFILE_KEY],
     queryFn: () => UserService.getUserProfile(),
+    gcTime: 10 * 60 * 1000,
     retry: false,
   });
 };

@@ -16,26 +16,28 @@ using Microsoft.Extensions.Options;
 namespace Libres.API.Features.Books.Application.Commands.Create
 
 {
-    public class CreateBookRequestHandler : ICustomRequestHandler<CreateBookRequest, Result<BookResponse>>
+    public class CreateBookRequestHandler : ICustomRequestHandler<CreateBookRequest, Result<CreateBookResponse>>
     {
         private readonly AppDbContext _context;
         private readonly FileService _fileService;
+        private readonly IHostEnvironment _environment;
 
-        public CreateBookRequestHandler(AppDbContext context, FileService fileService)
+        public CreateBookRequestHandler(AppDbContext context, FileService fileService, IHostEnvironment environment)
         {
             _context = context;
             _fileService = fileService;
+            _environment = environment;
 
         }
-        public async Task<Result<BookResponse>> HandleAsync(CreateBookRequest request, CancellationToken cancellationToken)
+        public async Task<Result<CreateBookResponse>> HandleAsync(CreateBookRequest request, CancellationToken cancellationToken)
         {
             string? coverImagePath = null;
             string? filePath = null;
 
             try
             {
-                coverImagePath = await SaveFileAsync(request.CoverImage, "covers");
-                filePath = await SaveFileAsync(request.File, "files");
+                coverImagePath = await SaveFileAsync(request.CoverImage, "public_files/covers");
+                filePath = await SaveFileAsync(request.File, "premium_files");
 
                 var bookValue = Book.Create(
                     request.Title,
@@ -51,7 +53,7 @@ namespace Libres.API.Features.Books.Application.Commands.Create
                 {
                     DeleteFileIfExists(coverImagePath);
                     DeleteFileIfExists(filePath);
-                    return new ResultBuilder<BookResponse>().WithFailure(bookValue.ErrorMessage).Build();
+                    return new ResultBuilder<CreateBookResponse>().WithFailure(bookValue.ErrorMessage).Build();
 
                 }
 
@@ -78,13 +80,13 @@ namespace Libres.API.Features.Books.Application.Commands.Create
                 int pagesCount = 0;
                 if (book.FilePath != null)
                 {
-                    pagesCount = BookExtenstions.GetPdfPageCount(book.FilePath);
-                    fileSizeInBytes = BookExtenstions.GetPdfSize(book.FilePath);
+                    pagesCount = BookExtenstions.GetPdfPageCount(book.FilePath, _environment);
+                    fileSizeInBytes = BookExtenstions.GetPdfSize(book.FilePath, _environment);
 
                 }
 
 
-                return new ResultBuilder<BookResponse>().WithSuccess(new BookResponse
+                return new ResultBuilder<CreateBookResponse>().WithSuccess(new CreateBookResponse
 
      (
          book.Id,
@@ -99,9 +101,8 @@ namespace Libres.API.Features.Books.Application.Commands.Create
          book.Description,
          book.CreatedAt,
          book.CoverImagePath != null ? $"{_fileService.GetBaseUrl()}/{book.CoverImagePath}" : null,
-         book.FilePath != null ? $"{_fileService.GetBaseUrl()}/{book.FilePath}" : null,
         null,
-        book.AverageRate,
+        book.AverageRating,
         pagesCount,
         fileSizeInBytes
 

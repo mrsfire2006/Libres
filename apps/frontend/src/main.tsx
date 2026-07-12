@@ -8,7 +8,7 @@ import { ThemeProvider } from 'next-themes'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import AppRouter from './routes/index'
-
+import { Toaster } from "sonner";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -37,7 +37,9 @@ createRoot(document.getElementById('root')!).render(
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <AppRouter />
         </ThemeProvider>
+        <Toaster />
       </QueryClientProvider>
     </HelmetProvider>
+
   </StrictMode>,
 )

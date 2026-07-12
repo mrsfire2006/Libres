@@ -1,3 +1,5 @@
+import type { AllowedApiRoutes } from "@/schemas/api-schema";
+
 export const STOREROUTES = {
   STORE: "/store",
   BOOKDETAILS: {
@@ -10,5 +12,7 @@ export const APISTOREROUTES = {
   ALLCATEGORIES: "category/categories",
   BOOKS: "book/books",
   BOOKBYID: "book/id",
-  ADDREVIEW: "book/review",
-};
+  ADDREVIEW: "review/create",
+  GETREVIEWS: "review/reviews",
+  GETPREVIEW: "book/preview",
+} satisfies Record<string, AllowedApiRoutes>;

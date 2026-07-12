@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Libres.API.Features.Books.Domain.Entities;
 using Libres.API.Features.Users.Domain;
 using Libres.API.Shared.Application.CustomError;
 using Libres.API.Shared.Domain;
@@ -23,14 +22,13 @@ namespace Libres.API.Features.Books.Domain
         public string? CoverImagePath { get; private set; }
         public string? FilePath { get; private set; }
 
-        private List<Review> _reviews = new List<Review>();
-        public IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
 
         public Guid? CategoryId { get; private set; }
 
         public BookStatus BookStatus { get; private set; } = BookStatus.Pending;
 
-
+        public double AverageRating { get; private set; } = 0.0;
+        public int ReviewsCount { get; private set; } = 0;
 
 
 
@@ -68,34 +66,56 @@ namespace Libres.API.Features.Books.Domain
             this.BookStatus = status;
         }
 
-        public Result<bool> ChangeName(string newName)
+        public Result ChangeName(string newName)
         {
             if (string.IsNullOrWhiteSpace(newName))
             {
-                return Result<bool>.Failure("New Name Cannot be empty");
+                return Result.Failure("New Name Cannot be empty");
             }
             this.Title = newName;
-            return Result<bool>.Success(true);
+            return Result.Success();
         }
-        public Result<bool> ChangeDescription(string? newDescription)
+        public Result ChangeDescription(string? newDescription)
         {
             this.Description = newDescription;
 
+            return Result.Success();
+        }
+        public Result UpdatePrice(decimal newPrice)
+        {
+            if (newPrice < 0)
+            {
+                return Result.Failure($"{newPrice} < 0");
+            }
+            Price = newPrice;
+            return Result.Success();
+        }
+        public Result ChangeCategory(Guid? newCategoryId)
+        {
+            CategoryId = newCategoryId;
+            return Result.Success();
+        }
+
+
+        public Result<bool> UpdateAverageRate(double newAverageRating, int newReviewsCount)
+        {
+            if (newAverageRating < 0 || newAverageRating > 5)
+            {
+                return Result<bool>.Failure("Rating must be between 0 and 5.");
+            }
+
+            if (newReviewsCount < 0)
+            {
+                return Result<bool>.Failure("Reviews count cannot be negative.");
+            }
+
+            this.AverageRating = Math.Round(newAverageRating, 2);
+
+            this.ReviewsCount = newReviewsCount;
+
             return Result<bool>.Success(true);
         }
 
 
-        public void AddReview(Review review)
-        {
-            this._reviews.Add(review);
-
-        }
-        public void RemoveReview(Review review)
-        {
-            this._reviews.Remove(review);
-
-        }
-
-        public double AverageRate => _reviews.Any() ? _reviews.Average(r => r.Rating) : 0.0;
     }
 }

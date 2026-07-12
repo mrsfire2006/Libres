@@ -14,73 +14,40 @@ using Microsoft.Extensions.Options;
 
 namespace Libres.API.Features.Books.Application.Commands.Edit
 {
-    public class EditBookRequestCommandHandler : ICustomRequestHandler<EditBookRequestCommand, Result<BookResponse>>
+    public class EditBookRequestCommandHandler : ICustomRequestHandler<EditBookRequestCommand, Result>
     {
 
         private readonly AppDbContext _context;
         private readonly FileService _fileService;
+        private readonly IHostEnvironment _environment;
 
 
-        public EditBookRequestCommandHandler(AppDbContext context, FileService fileService)
+        public EditBookRequestCommandHandler(AppDbContext context, FileService fileService, IHostEnvironment environment)
         {
             _context = context;
             _fileService = fileService;
-
+            _environment = environment;
 
         }
-        public async Task<Result<BookResponse>> HandleAsync(EditBookRequestCommand request, CancellationToken cancellationToken)
+        public async Task<Result> HandleAsync(EditBookRequestCommand request, CancellationToken cancellationToken)
         {
             var book = await _context.Books.FirstOrDefaultAsync(x => x.Id == request.BookId);
+
+
             if (book == null)
             {
-                return new ResultBuilder<BookResponse>().WithFailure("Book Not Found").Build();
+                return new ResultBuilder().WithFailure("Book Not Found").Build();
 
             }
-            var resultName = book.ChangeName(request.Title);
-            var resultDescription = book.ChangeDescription(request.Description);
-            if (resultName.IsFailure)
-            {
-                return new ResultBuilder<BookResponse>().WithFailure(resultName.ErrorMessage).Build();
-
-
-            }
+            book.ChangeName(request.Title);
+            book.ChangeDescription(request.Description);
+            book.UpdatePrice(request.Price);
+            book.ChangeCategory(request.CategoryId);
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            long fileSizeInBytes = 0;
-            int pagesCount = 0;
-            if (book.FilePath != null)
-            {
-                pagesCount = BookExtenstions.GetPdfPageCount(book.FilePath);
-                fileSizeInBytes = BookExtenstions.GetPdfSize(book.FilePath);
 
-            }
-
-
-            var bookResponse = await _context.Books.AsNoTracking()
-            .Where(x => x.Id == request.BookId)
-            .Select(book => new BookResponse(
-                 book.Id,
-                 book.Title,
-                 _context.Users.Where(u => u.Id == book.UserId).Select(u => u.UserName).FirstOrDefault() ?? "",
-                 book.UserId,
-                 book.CategoryId,
-                 _context.Categories.Where(c => c.Id == book.CategoryId).Select(c => c.Name).FirstOrDefault() ?? "",
-                 book.Price,
-                 book.BookStatus.ToString(),
-                 book.Order,
-                 book.Description,
-                 book.CreatedAt,
-                 book.CoverImagePath != null ? $"{_fileService.GetBaseUrl()}/{book.CoverImagePath}" : null,
-                 book.FilePath != null ? $"{_fileService.GetBaseUrl()}/{book.FilePath}" : null,
-                null,
-                book.AverageRate,
-                pagesCount,
-                fileSizeInBytes
-            )).FirstOrDefaultAsync(cancellationToken);
-
-
-            return new ResultBuilder<BookResponse>().WithSuccess(bookResponse).Build();
+            return new ResultBuilder().WithSuccess().Build();
 
         }
     }

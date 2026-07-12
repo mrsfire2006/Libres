@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Libres.API.Features.Users.Application.Commands.UpdatePassword
 {
-    public record UpdatePasswordRequestCommand(string CurrentPassword, string NewPassword) : ICustomRequest<Result<string>>
+    public record UpdatePasswordRequestCommand(string CurrentPassword, string NewPassword) : ICustomRequest<Result>
     {
         [JsonIgnore]
         [BindNever]

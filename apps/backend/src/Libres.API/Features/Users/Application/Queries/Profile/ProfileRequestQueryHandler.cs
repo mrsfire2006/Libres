@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Libres.API.Features.Users.Application.Queries.Profile
 {
-    public class ProfileRequestQueryHandler : ICustomRequestHandler<ProfileRequestQuery, Result<UserProfileResponse>>
+    public class ProfileRequestQueryHandler : ICustomRequestHandler<ProfileRequestQuery, Result<ProfileResponse>>
     {
         private readonly FileService _fileService;
         public readonly AppDbContext _context;
@@ -21,11 +21,11 @@ namespace Libres.API.Features.Users.Application.Queries.Profile
             _fileService = fileService;
         }
 
-        public async Task<Result<UserProfileResponse>> HandleAsync(ProfileRequestQuery request, CancellationToken cancellationToken)
+        public async Task<Result<ProfileResponse>> HandleAsync(ProfileRequestQuery request, CancellationToken cancellationToken)
         {
             var user = await _context.Users
                         .Where(x => x.Id == request.UserId)
-                        .Select(u => new UserProfileResponse(
+                        .Select(u => new ProfileResponse(
                             u.Id,
                             u.UserName!,
                             u.Email!,
@@ -37,10 +37,10 @@ namespace Libres.API.Features.Users.Application.Queries.Profile
 
             if (user == null)
             {
-                return new ResultBuilder<UserProfileResponse>().WithFailure("User not found").Build();
+                return new ResultBuilder<ProfileResponse>().WithFailure("User not found").Build();
 
             }
-            return new ResultBuilder<UserProfileResponse>().WithSuccess(user).Build();
+            return new ResultBuilder<ProfileResponse>().WithSuccess(user).Build();
 
 
         }

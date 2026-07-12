@@ -5,10 +5,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DollarSign, UploadCloud, ImageIcon, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 import type { CreateBookRequest, UploadStatus } from '../type';
-import { useAuthor } from '../author.hook';
+import { useUploadBook } from '../author.hook';
 import { useGetUserProfileQuery } from '@/features/user/user.hook';
 import { useCategories } from '@/features/store/store.hook';
-
 
 export function FileUploader() {
     const { data: categories } = useCategories();
@@ -17,8 +16,7 @@ export function FileUploader() {
     const [error, setError] = useState("");
     const { data: user } = useGetUserProfileQuery();
 
-
-    const { mutateAsync: upload } = useAuthor().uploadBook;
+    const { mutateAsync: upload } = useUploadBook(user?.value?.userId ?? "");
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>, fieldName: keyof CreateBookRequest) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -35,7 +33,6 @@ export function FileUploader() {
             return;
         }
 
-
         setStatus("uploading");
         const formData = new FormData();
         book.UserId = user?.value?.userId;
@@ -49,11 +46,8 @@ export function FileUploader() {
             }
         });
 
-
-
         try {
             const result = await upload(formData);
-
             if (result.isSuccess) {
                 setStatus("success");
                 setBook({});
@@ -86,18 +80,19 @@ export function FileUploader() {
                     />
                 </div>
 
-                {/* Category */}
+                {/* Category - مع إضافة خيار الإلغاء */}
                 <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground">Category *</label>
                     <Select
                         value={book.CategoryId || ""}
                         onValueChange={(value) => setBook({ ...book, CategoryId: value })}
-                        required
                     >
                         <SelectTrigger className="w-full h-10">
-                            <SelectValue placeholder="Select the appropriate category" />
+                            <SelectValue placeholder="اختر التصنيف المناسب" />
                         </SelectTrigger>
                         <SelectContent>
+                            {/* ✅ هذا الخيار يسمح بإلغاء التحديد */}
+                            <SelectItem value="">بدون تصنيف</SelectItem>
                             {categories?.value && categories.value.map((cat) => (
                                 <SelectItem key={cat.categoryId} value={cat.categoryId}>
                                     {cat.name}
@@ -118,7 +113,7 @@ export function FileUploader() {
                             type="number"
                             min="0"
                             step="0.1"
-                            value={book.Price}
+                            value={book.Price ?? 0}
                             onChange={(e) => setBook({ ...book, Price: Number(e.target.value) })}
                             placeholder="0.00"
                             className="pl-9"

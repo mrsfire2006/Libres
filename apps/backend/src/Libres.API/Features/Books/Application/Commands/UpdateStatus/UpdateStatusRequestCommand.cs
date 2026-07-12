@@ -8,6 +8,6 @@ using Libres.API.Shared.Domain.Enums;
 
 namespace Libres.API.Features.Books.Application.Commands.UpdateStatus
 {
-    public record UpdateStatusRequestCommand(Guid BookId, BookStatus BookStatus) : ICustomRequest<Result<string>>;
+    public record UpdateStatusRequestCommand(Guid BookId, BookStatus BookStatus) : ICustomRequest<Result>;
 
 }

@@ -47,7 +47,7 @@ export default function ProfilePage() {
             </div>
 
             {/* رصيد المحفظة */}
-            <div className="bg-card border rounded-xl p-6 mb-6 flex items-center justify-between">
+            {user.roles.includes("Reader") ? <div className="bg-card border rounded-xl p-6 mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="p-2.5 rounded-full bg-primary/10 text-primary">
                         <Wallet className="w-5 h-5" />
@@ -57,7 +57,7 @@ export default function ProfilePage() {
                         <p className="text-lg font-bold text-foreground">{formattedBalance}</p>
                     </div>
                 </div>
-            </div>
+            </div> : <></>}
 
             {/* تبويب يدوي */}
             <div className="flex gap-2 mb-4 border-b">

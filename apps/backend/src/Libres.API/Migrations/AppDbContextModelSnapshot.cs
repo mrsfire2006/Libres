@@ -28,6 +28,9 @@ namespace Libres.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<double>("AverageRating")
+                        .HasColumnType("double precision");
+
                     b.Property<int>("BookStatus")
                         .HasColumnType("integer");
 
@@ -52,6 +55,9 @@ namespace Libres.API.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
+                    b.Property<int>("ReviewsCount")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
@@ -66,37 +72,6 @@ namespace Libres.API.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Books");
-                });
-
-            modelBuilder.Entity("Libres.API.Features.Books.Domain.Entities.Review", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("BookId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookId");
-
-                    b.HasIndex("UserId", "BookId")
-                        .IsUnique();
-
-                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Libres.API.Features.Categories.Domain.Category", b =>
@@ -145,6 +120,37 @@ namespace Libres.API.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Libres.API.Features.Reviews.Domain.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BookId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId", "BookId")
+                        .IsUnique();
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("Libres.API.Features.UserLibrary.Domain.Library", b =>
@@ -445,20 +451,6 @@ namespace Libres.API.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Libres.API.Features.Books.Domain.Entities.Review", b =>
-                {
-                    b.HasOne("Libres.API.Features.Books.Domain.Book", null)
-                        .WithMany("Reviews")
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Libres.API.Features.Users.Domain.User", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
-                });
-
             modelBuilder.Entity("Libres.API.Features.Orders.Domain.Order", b =>
                 {
                     b.HasOne("Libres.API.Features.Books.Domain.Book", null)
@@ -472,6 +464,20 @@ namespace Libres.API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Libres.API.Features.Reviews.Domain.Review", b =>
+                {
+                    b.HasOne("Libres.API.Features.Books.Domain.Book", null)
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Libres.API.Features.Users.Domain.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("Libres.API.Features.UserLibrary.Domain.Library", b =>
@@ -547,11 +553,6 @@ namespace Libres.API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Libres.API.Features.Books.Domain.Book", b =>
-                {
-                    b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618
         }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Libres.API.Features.Books.Domain;
-using Libres.API.Features.Books.Domain.Entities;
 using Libres.API.Features.Users.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

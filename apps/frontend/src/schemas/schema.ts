@@ -43,9 +43,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ResultOfBookResponse"];
-                        "application/json": components["schemas"]["ResultOfBookResponse"];
-                        "text/json": components["schemas"]["ResultOfBookResponse"];
+                        "text/plain": components["schemas"]["ResultOfCreateBookResponse"];
+                        "application/json": components["schemas"]["ResultOfCreateBookResponse"];
+                        "text/json": components["schemas"]["ResultOfCreateBookResponse"];
                     };
                 };
             };
@@ -79,6 +79,10 @@ export interface paths {
                         BookId?: string;
                         Title?: string;
                         Description?: string;
+                        /** Format: double */
+                        Price?: number | string;
+                        /** Format: uuid */
+                        CategoryId?: string;
                     };
                 };
             };
@@ -89,9 +93,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ResultOfBookResponse"];
-                        "application/json": components["schemas"]["ResultOfBookResponse"];
-                        "text/json": components["schemas"]["ResultOfBookResponse"];
+                        "text/plain": components["schemas"]["Result"];
+                        "application/json": components["schemas"]["Result"];
+                        "text/json": components["schemas"]["Result"];
                     };
                 };
             };
@@ -133,9 +137,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ResultOfBookResponse"];
-                        "application/json": components["schemas"]["ResultOfBookResponse"];
-                        "text/json": components["schemas"]["ResultOfBookResponse"];
+                        "text/plain": components["schemas"]["Result"];
+                        "application/json": components["schemas"]["Result"];
+                        "text/json": components["schemas"]["Result"];
                     };
                 };
             };
@@ -177,9 +181,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ResultOfBookResponse"];
-                        "application/json": components["schemas"]["ResultOfBookResponse"];
-                        "text/json": components["schemas"]["ResultOfBookResponse"];
+                        "text/plain": components["schemas"]["Result"];
+                        "application/json": components["schemas"]["Result"];
+                        "text/json": components["schemas"]["Result"];
                     };
                 };
             };
@@ -232,6 +236,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/book/authorbooks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ResultOfIEnumerableOfAuthorBookResponse"];
+                        "application/json": components["schemas"]["ResultOfIEnumerableOfAuthorBookResponse"];
+                        "text/json": components["schemas"]["ResultOfIEnumerableOfAuthorBookResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/book/id": {
         parameters: {
             query?: never;
@@ -257,9 +298,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ResultOfBookResponse"];
-                        "application/json": components["schemas"]["ResultOfBookResponse"];
-                        "text/json": components["schemas"]["ResultOfBookResponse"];
+                        "text/plain": components["schemas"]["ResultOfGetBookResponse"];
+                        "application/json": components["schemas"]["ResultOfGetBookResponse"];
+                        "text/json": components["schemas"]["ResultOfGetBookResponse"];
                     };
                 };
             };
@@ -272,29 +313,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/book/review": {
+    "/api/book/file": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
-        put?: never;
-        post: {
+        get: {
             parameters: {
-                query?: never;
+                query?: {
+                    BookId?: string;
+                    UserId?: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
             };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["CreateReviewRequestCommand"];
-                    "text/json": components["schemas"]["CreateReviewRequestCommand"];
-                    "application/*+json": components["schemas"]["CreateReviewRequestCommand"];
-                };
-            };
+            requestBody?: never;
             responses: {
                 /** @description OK */
                 200: {
@@ -302,13 +338,91 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["Result"];
-                        "application/json": components["schemas"]["Result"];
-                        "text/json": components["schemas"]["Result"];
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
                     };
                 };
             };
         };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/book/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    BookId?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["FileResult"];
+                        "application/json": components["schemas"]["FileResult"];
+                        "text/json": components["schemas"]["FileResult"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/book/bookbio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ResultOfBookBioResponse"];
+                        "application/json": components["schemas"]["ResultOfBookBioResponse"];
+                        "text/json": components["schemas"]["ResultOfBookBioResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -337,9 +451,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ResultOfIEnumerableOfCategoryResponse"];
-                        "application/json": components["schemas"]["ResultOfIEnumerableOfCategoryResponse"];
-                        "text/json": components["schemas"]["ResultOfIEnumerableOfCategoryResponse"];
+                        "text/plain": components["schemas"]["ResultOfIEnumerableOfAllCategoryResponse"];
+                        "application/json": components["schemas"]["ResultOfIEnumerableOfAllCategoryResponse"];
+                        "text/json": components["schemas"]["ResultOfIEnumerableOfAllCategoryResponse"];
                     };
                 };
             };
@@ -381,9 +495,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ResultOfstring"];
-                        "application/json": components["schemas"]["ResultOfstring"];
-                        "text/json": components["schemas"]["ResultOfstring"];
+                        "text/plain": components["schemas"]["Result"];
+                        "application/json": components["schemas"]["Result"];
+                        "text/json": components["schemas"]["Result"];
                     };
                 };
             };
@@ -425,9 +539,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ResultOfCategoryResponse"];
-                        "application/json": components["schemas"]["ResultOfCategoryResponse"];
-                        "text/json": components["schemas"]["ResultOfCategoryResponse"];
+                        "text/plain": components["schemas"]["ResultOfAddCategoryResponse"];
+                        "application/json": components["schemas"]["ResultOfAddCategoryResponse"];
+                        "text/json": components["schemas"]["ResultOfAddCategoryResponse"];
                     };
                 };
             };
@@ -518,6 +632,90 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/review/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateReviewRequestCommand"];
+                    "text/json": components["schemas"]["CreateReviewRequestCommand"];
+                    "application/*+json": components["schemas"]["CreateReviewRequestCommand"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["Result"];
+                        "application/json": components["schemas"]["Result"];
+                        "text/json": components["schemas"]["Result"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/review/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    BookId?: string;
+                    Take?: number | string;
+                    Skip?: number | string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["ResultOfIEnumerableOfGetReviewResponse"];
+                        "application/json": components["schemas"]["ResultOfIEnumerableOfGetReviewResponse"];
+                        "text/json": components["schemas"]["ResultOfIEnumerableOfGetReviewResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -639,9 +837,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ResultOfstring"];
-                        "application/json": components["schemas"]["ResultOfstring"];
-                        "text/json": components["schemas"]["ResultOfstring"];
+                        "text/plain": components["schemas"]["Result"];
+                        "application/json": components["schemas"]["Result"];
+                        "text/json": components["schemas"]["Result"];
                     };
                 };
             };
@@ -677,9 +875,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ResultOfSigninResponse"];
-                        "application/json": components["schemas"]["ResultOfSigninResponse"];
-                        "text/json": components["schemas"]["ResultOfSigninResponse"];
+                        "text/plain": components["schemas"]["Result"];
+                        "application/json": components["schemas"]["Result"];
+                        "text/json": components["schemas"]["Result"];
                     };
                 };
             };
@@ -712,9 +910,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["ResultOfUserProfileResponse"];
-                        "application/json": components["schemas"]["ResultOfUserProfileResponse"];
-                        "text/json": components["schemas"]["ResultOfUserProfileResponse"];
+                        "text/plain": components["schemas"]["ResultOfProfileResponse"];
+                        "application/json": components["schemas"]["ResultOfProfileResponse"];
+                        "text/json": components["schemas"]["ResultOfProfileResponse"];
                     };
                 };
             };
@@ -778,19 +976,26 @@ export interface components {
             name: string;
             description: null | string;
         };
+        AddCategoryResponse: {
+            /** Format: uuid */
+            categoryId: string;
+            name: string;
+            description?: null | string;
+        };
+        AllCategoryResponse: {
+            /** Format: uuid */
+            categoryId: string;
+            name: string;
+            description?: null | string;
+        };
         ApproveOrderCommand: {
             /** Format: uuid */
             orderId: string;
         };
-        BookResponse: {
+        AuthorBookResponse: {
             /** Format: uuid */
             id: string;
             title: string;
-            author: string;
-            /** Format: uuid */
-            userId: string;
-            /** Format: uuid */
-            categoryId: null | string;
             categoryName: null | string;
             /** Format: double */
             price: number | string;
@@ -801,16 +1006,16 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
             coverImageUrl: null | string;
-            fileUrl: null | string;
-            reviews: null | components["schemas"]["ReviewResponse"][];
             /** Format: double */
             averageRate: number | string;
+        };
+        BookBioResponse: {
             /** Format: int32 */
-            pageCount: number | string;
-            /** Format: int64 */
-            fileSizeInBytes: number | string;
-            /** @default false */
-            hasUserReviewed: boolean;
+            totalBook: number | string;
+            /** Format: int32 */
+            pulibshed: number | string;
+            /** Format: int32 */
+            totalOrder: number | string;
         };
         /** @enum {unknown} */
         BookStatus: "Accepted" | "Rejected" | "Pending";
@@ -829,11 +1034,34 @@ export interface components {
             publishedAt: string;
             coverImageUrl: null | string;
         };
-        CategoryResponse: {
+        CreateBookResponse: {
             /** Format: uuid */
-            categoryId: string;
-            name: string;
-            description?: null | string;
+            id: string;
+            title: string;
+            author: string;
+            /** Format: uuid */
+            userId: string;
+            /** Format: uuid */
+            categoryId: null | string;
+            categoryName: null | string;
+            /** Format: double */
+            price: number | string;
+            bookStatus: string;
+            /** Format: int32 */
+            order: number | string;
+            description: null | string;
+            /** Format: date-time */
+            createdAt: string;
+            coverImageUrl: null | string;
+            reviews: null | components["schemas"]["ReviewResponse"][];
+            /** Format: double */
+            averageRate: number | string;
+            /** Format: int32 */
+            pageCount: number | string;
+            /** Format: int64 */
+            fileSizeInBytes: number | string;
+            /** @default false */
+            hasUserReviewed: boolean;
         };
         CreateOrderRequestCommand: {
             /** Format: uuid */
@@ -842,10 +1070,10 @@ export interface components {
         CreateReviewRequestCommand: {
             /** Format: uuid */
             bookId: string;
-            comment: string;
+            comment: null | string;
             /**
              * Format: int32
-             * @default 0
+             * @default 1
              */
             rating: number | string;
         };
@@ -853,6 +1081,61 @@ export interface components {
             categoryId: string;
             newName: string;
             newDescription: null | string;
+        };
+        EntityTagHeaderValue: {
+            tag?: components["schemas"]["StringSegment"];
+            isWeak?: boolean;
+        };
+        FileResult: {
+            contentType?: null | string;
+            fileDownloadName?: null | string;
+            /** Format: date-time */
+            lastModified?: null | string;
+            entityTag?: null | components["schemas"]["EntityTagHeaderValue"];
+            enableRangeProcessing?: boolean;
+        };
+        GetBookResponse: {
+            /** Format: uuid */
+            id: string;
+            title: string;
+            author: string;
+            /** Format: uuid */
+            userId: string;
+            /** Format: uuid */
+            categoryId: null | string;
+            categoryName: null | string;
+            /** Format: double */
+            price: number | string;
+            bookStatus: string;
+            /** Format: int32 */
+            order: number | string;
+            description: null | string;
+            /** Format: date-time */
+            createdAt: string;
+            coverImageUrl: null | string;
+            /** Format: double */
+            averageRate: number | string;
+            /** Format: int32 */
+            pageCount: number | string;
+            /** Format: int64 */
+            fileSizeInBytes: number | string;
+            /** Format: int32 */
+            reviewCount: number | string;
+            /** @default false */
+            hasUserReviewed: boolean;
+        };
+        GetReviewResponse: {
+            /** Format: uuid */
+            reviewId: string;
+            comment: string;
+            /** Format: int32 */
+            rating: number | string;
+            username: string;
+            image: null | string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: uuid */
+            userId: null | string;
         };
         /** Format: binary */
         IFormFile: string;
@@ -866,6 +1149,19 @@ export interface components {
             status: components["schemas"]["OrderStatus"];
         };
         OrderStatus: number;
+        ProfileResponse: {
+            /** Format: uuid */
+            userId: string;
+            username: string;
+            email: string;
+            image: null | string;
+            roles: string;
+            /**
+             * Format: double
+             * @default 15
+             */
+            balance: number | string;
+        };
         RegisterRequestCommand: {
             username: string;
             email: string;
@@ -880,16 +1176,48 @@ export interface components {
             /** Format: int32 */
             statusCode?: number | string;
         };
-        ResultOfBookResponse: {
-            value?: components["schemas"]["BookResponse"];
+        ResultOfAddCategoryResponse: {
+            value?: components["schemas"]["AddCategoryResponse"];
             isSuccess?: boolean;
             isFailure?: boolean;
             errorMessage?: string;
             /** Format: int32 */
             statusCode?: number | string;
         };
-        ResultOfCategoryResponse: {
-            value?: components["schemas"]["CategoryResponse"];
+        ResultOfBookBioResponse: {
+            value?: components["schemas"]["BookBioResponse"];
+            isSuccess?: boolean;
+            isFailure?: boolean;
+            errorMessage?: string;
+            /** Format: int32 */
+            statusCode?: number | string;
+        };
+        ResultOfCreateBookResponse: {
+            value?: components["schemas"]["CreateBookResponse"];
+            isSuccess?: boolean;
+            isFailure?: boolean;
+            errorMessage?: string;
+            /** Format: int32 */
+            statusCode?: number | string;
+        };
+        ResultOfGetBookResponse: {
+            value?: components["schemas"]["GetBookResponse"];
+            isSuccess?: boolean;
+            isFailure?: boolean;
+            errorMessage?: string;
+            /** Format: int32 */
+            statusCode?: number | string;
+        };
+        ResultOfIEnumerableOfAllCategoryResponse: {
+            value?: null | components["schemas"]["AllCategoryResponse"][];
+            isSuccess?: boolean;
+            isFailure?: boolean;
+            errorMessage?: string;
+            /** Format: int32 */
+            statusCode?: number | string;
+        };
+        ResultOfIEnumerableOfAuthorBookResponse: {
+            value?: null | components["schemas"]["AuthorBookResponse"][];
             isSuccess?: boolean;
             isFailure?: boolean;
             errorMessage?: string;
@@ -904,8 +1232,8 @@ export interface components {
             /** Format: int32 */
             statusCode?: number | string;
         };
-        ResultOfIEnumerableOfCategoryResponse: {
-            value?: null | components["schemas"]["CategoryResponse"][];
+        ResultOfIEnumerableOfGetReviewResponse: {
+            value?: null | components["schemas"]["GetReviewResponse"][];
             isSuccess?: boolean;
             isFailure?: boolean;
             errorMessage?: string;
@@ -920,24 +1248,16 @@ export interface components {
             /** Format: int32 */
             statusCode?: number | string;
         };
+        ResultOfProfileResponse: {
+            value?: components["schemas"]["ProfileResponse"];
+            isSuccess?: boolean;
+            isFailure?: boolean;
+            errorMessage?: string;
+            /** Format: int32 */
+            statusCode?: number | string;
+        };
         ResultOfSigninResponse: {
             value?: components["schemas"]["SigninResponse"];
-            isSuccess?: boolean;
-            isFailure?: boolean;
-            errorMessage?: string;
-            /** Format: int32 */
-            statusCode?: number | string;
-        };
-        ResultOfstring: {
-            value?: null | string;
-            isSuccess?: boolean;
-            isFailure?: boolean;
-            errorMessage?: string;
-            /** Format: int32 */
-            statusCode?: number | string;
-        };
-        ResultOfUserProfileResponse: {
-            value?: components["schemas"]["UserProfileResponse"];
             isSuccess?: boolean;
             isFailure?: boolean;
             errorMessage?: string;
@@ -959,22 +1279,18 @@ export interface components {
             /** Format: uuid */
             userId: string;
         };
+        StringSegment: {
+            buffer?: null | string;
+            /** Format: int32 */
+            offset?: number | string;
+            /** Format: int32 */
+            length?: number | string;
+            value?: null | string;
+            hasValue?: boolean;
+        };
         UpdatePasswordRequestCommand: {
             currentPassword: string;
             newPassword: string;
-        };
-        UserProfileResponse: {
-            /** Format: uuid */
-            userId: string;
-            username: string;
-            email: string;
-            image: null | string;
-            roles: string;
-            /**
-             * Format: double
-             * @default 15
-             */
-            balance: number | string;
         };
         /** @default Reader */
         UserRoles: string;

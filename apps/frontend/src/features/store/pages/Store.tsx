@@ -8,6 +8,8 @@ import LoadingCircle from "@/components/shared/loading-circle"
 import { useBooks } from "../store.hook"
 import BookCard from "../components/book-card"
 import { Outlet } from "react-router-dom"
+import { Search, SlidersHorizontal } from "lucide-react"
+import { Input } from "@/components/ui/input"
 
 
 const ITEMS_PER_PAGE = 24
@@ -45,16 +47,16 @@ function StorePage() {
       <SubTitle mainTitle="All Books" description="Browse our full collection" />
 
       {/* Search */}
-      {/* <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2 mb-6 bg-card">
+      <div className="flex items-center gap-2 border border-border rounded-lg px-3 py-2 mb-6 bg-card">
                 <Search size={16} className="text-muted-foreground shrink-0" />
                 <Input
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    // value={search}
+                    // onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search by title, author..."
                     className="border-0 shadow-none p-0 h-auto focus-visible:ring-0 text-sm bg-transparent"
                 />
                 <SlidersHorizontal size={16} className="text-muted-foreground shrink-0" />
-            </div> */}
+            </div>
 
       {/* Categories Carousel */}
       <CategoriesBar

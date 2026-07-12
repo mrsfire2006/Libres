@@ -13,24 +13,28 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Scrutor;
 namespace Libres.API.Shared
 {
+
     public static class DependencyInjection
     {
-        public static IServiceCollection AddSharedApplicationServices(this IServiceCollection services, params Assembly[] assemblies)
+
+
+        public static IServiceCollection AddSharedApplicationServices(this IServiceCollection services, Assembly assembly)
         {
 
             services.AddScoped<CustomMediator>();
             services.AddScoped<FileService>();
-            foreach (var assembly in assemblies)
-            {
-                RegisterHandlers(services, assembly, typeof(ICustomRequestHandler<,>));
-                RegisterHandlers(services, assembly, typeof(ICustomNotificationHandler<>));
-            }
+
+            RegisterHandlers(services, assembly, typeof(ICustomRequestHandler<,>));
+            RegisterHandlers(services, assembly, typeof(ICustomNotificationHandler<>));
+
 
             return services;
         }
+
 
         private static void RegisterHandlers(IServiceCollection services, Assembly assembly, Type openHandlerInterface)
         {
@@ -42,7 +46,9 @@ namespace Libres.API.Shared
 
             foreach (var handler in handlerTypes)
             {
+
                 services.AddScoped(handler.Interface, handler.Implementation);
+
             }
         }
         public static IServiceCollection AddSharedInfrastructureServices(this IServiceCollection services, IConfiguration configuration)

@@ -1,24 +1,54 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AuthorService } from "./author.service";
 
-export const useAuthor = () => {
-  const uploadBook = useMutation({
+export const useUploadBook = (userId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
     mutationFn: AuthorService.uploadFile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["author-books", userId],
+      });
+    },
   });
-  const getEarningsStats = useQuery({
-    queryKey: ["author", "earnings"],
-    queryFn: AuthorService.getEarningsStats,
-  });
+};
+export const useEditAuthorBook = (userId:string) => {
+  const queryClient = useQueryClient();
 
-  const getAuthorBooks = useQuery({
-    queryKey: ["author", "books"],
-    queryFn: AuthorService.getAuthorBooks,
+  return useMutation({
+    mutationFn: AuthorService.updateAuthorBook,
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey:["author-books", userId]})
+    },
   });
+};
+export const useAuthor = () => {
+  // const getEarningsStats = useQuery({
+  //   queryKey: ["author", "earnings"],
+  //   queryFn: AuthorService.getEarningsStats,
+  // });
+  // const getAuthorBooks = useQuery({
+  //   queryKey: ["author", "books"],
+  //   queryFn: AuthorService.getAuthorBooks,
+  // });
+  // const getRecentActivity = useQuery({
+  //   queryKey: ["author", "activity"],
+  //   queryFn: AuthorService.getRecentActivity,
+  // });
+  // return { useGetBookBio };
+};
 
-  const getRecentActivity = useQuery({
-    queryKey: ["author", "activity"],
-    queryFn: AuthorService.getRecentActivity,
+export const useGetBookBio = (userId: string) => {
+  return useQuery({
+    queryFn: () => AuthorService.getBookBio(),
+    queryKey: ["book-bio", userId],
   });
+};
 
-  return { uploadBook, getEarningsStats, getAuthorBooks, getRecentActivity };
+export const useGetAuthorBooks = (userId: string) => {
+  return useQuery({
+    queryFn: () => AuthorService.getAuthorBooks(),
+    queryKey: ["author-books", userId],
+  });
 };

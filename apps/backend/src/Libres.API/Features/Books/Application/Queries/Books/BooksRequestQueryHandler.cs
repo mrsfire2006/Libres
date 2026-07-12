@@ -37,6 +37,8 @@ namespace Libres.API.Features.Books.Application.Queries.Books
                         from subCategory in categoryGroup.DefaultIfEmpty()
                         select new { book, user, subCategory };
 
+
+
             if (request.categoryId.HasValue && request.categoryId.Value != Guid.Empty)
             {
                 query = query.Where(x => x.book.CategoryId == request.categoryId);
@@ -58,6 +60,7 @@ namespace Libres.API.Features.Books.Application.Queries.Books
                         x.book.CoverImagePath != null ? $"{_fileService.GetBaseUrl()}/{x.book.CoverImagePath}" : null
                     ))
                     .ToListAsync(cancellationToken);
+
 
             return new ResultBuilder<IEnumerable<BookSummaryResponse>>().WithSuccess(books).Build();
 

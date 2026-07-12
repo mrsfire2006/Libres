@@ -17,6 +17,28 @@ export async function clientFetch<T>(
     credentials: "include",
   });
 
+  const contentType = response.headers.get("Content-Type") ?? "";
+
+  if (!contentType.includes("application/json")) {
+    if (!response.ok) {
+      return {
+        isSuccess: false,
+        isFailure: true,
+        value: null as T,
+        statusCode: response.status,
+        errorMessage: "Failed to fetch resource",
+      } as unknown as Result<T>;
+    }
+
+    const blob = await response.blob();
+    return {
+      isSuccess: true,
+      isFailure: false,
+      value: blob as unknown as T,
+      error: null,
+    } as unknown as Result<T>;
+  }
+
   if (response.status === 204) {
     return {
       isSuccess: true,
