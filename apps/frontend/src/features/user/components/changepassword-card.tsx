@@ -46,7 +46,8 @@ export function ChangePasswordCard() {
             else if (result.isSuccess) {
                 setMessage({ message: "", state: "success" });
             }
-        } catch {
+            
+        } catch { 
             setMessage({
                 message: "حدث خطأ غير متوقع، يرجى المحاولة لاحقاً.",
                 state: "error"
